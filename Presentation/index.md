@@ -67,11 +67,7 @@ $$\begin{array}
 
 ---
 
-## MCMC & Gibbs Sampler
-
-1. **Markov chain Monte Carlo simulation(MCMC):** is a general method based on drawing values of θ from approximate distributions and then correcting those draws to better approximate the target posterior distribution, p(θ|y). 
-
-2. **Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others ($\theta = (\theta_1, \cdots , \theta_d)$).
+## Statistical results
 
 <center>![Theorem 10.6](figure/Them10.6.png)
 
