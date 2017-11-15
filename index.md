@@ -77,42 +77,6 @@ $$\begin{array}
 
 
 
----
-
-## Statistical results
-
-- The differences in **IFF/Attempt** between gender are not significantly different.
 
 
 
----
-
-## Statistical results
-
-- The differences in **Creative outcome/T-value** between countries are significantly different. 
-
-
-
----
-
-## Statistical results
-
-- The differences in **Attempt** between countries are significantly different. 
-
-
-
----
-
-## Online application and products
-
-1. [Creative style online estimation](http://ameveryone.com/shiny/Creativity/)
-2. [R package: DataClean](https://cran.r-project.org/web/packages/DataClean/)
-
-<center>![AmEveryong](figure/QR.jpeg)
-
----
-
-## Recommended courses:
-1. [Creativity, Innovation and Changes -- Penn State University](https://www.coursera.org/learn/creativity-innovation)
-2. [Machine Learning -- Stanford University](https://www.coursera.org/learn/machine-learning/home/info)
-3. [Developing Data Products -- The Johns Hopkins University](https://www.coursera.org/learn/data-products/home/welcome) 
