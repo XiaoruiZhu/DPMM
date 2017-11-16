@@ -106,7 +106,12 @@
     <h2>Dirichlet Process</h2>
   </hgroup>
   <article data-timings="">
-    <p>\(DP\) is a random measure defined as \[\mu = \sum^{\infty}_{n=1} p_n \delta_{\phi_n}, \] where \((p_n)_{n\in N}\) are random weights by stick-breaking construction with parameter \(\theta\) and \((\phi_n)_{n\in N} \overset{iid}{\sim} G_0\) &quot;the base measure&quot;. </p>
+    <p>\(DP\) is a random measure defined as: \[\mu = \sum^{\infty}_{n=1} p_n \delta_{\phi_n}, \] where:</p>
+
+<ul>
+<li>\((p_n)_{n\in N}\) are random weights by stick-breaking construction with parameter \(\theta\)</li>
+<li>and \((\phi_n)_{n\in N} \overset{iid}{\sim} G_0\) is &quot;the base measure&quot;. </li>
+</ul>
 
 <p>Therefore, \(\mu \sim DP(\theta, G_0)\) has following repressentation: </p>
 
@@ -123,17 +128,24 @@
 
 <slide class="" id="slide-4" style="background:;">
   <hgroup>
-    <h2>Stick-Breaking and CRP</h2>
+    <h2>Stick-Breaking construction</h2>
   </hgroup>
   <article data-timings="">
-    <ol>
-<li>CRP Theorem 10.5: \(\text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta\) almost surely. </li>
-<li> 
-3.</li>
-<li></li>
-</ol>
+    <!-- Stick-breaking construction of Poisson-Dirichlet random partition $(0,θ)$.  -->
 
-<p><img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
+<p>Let \((V_n)_{n\in N}\) be i.i.d. \(\text{Beta}(1,\theta)\) random variables.</p>
+
+<p>That is, \(P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.\)</p>
+
+<p>Consider
+\[\begin{array}
+  {rl}
+  P_1 & := \;  V_1 \\
+  P_2 & := (1-V_1)V_2 \\
+  P_3 & := (1-V_1)(1-V_2)V_3 \\
+      & \vdots \\
+  P_{n+1} & := \displaystyle V_n \prod^{n-1}_{j=1}(1-V_j)
+  \end{array}\]</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -141,15 +153,117 @@
 
 <slide class="" id="slide-5" style="background:;">
   <hgroup>
+    <h2>Stick-Breaking construction</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- <center>![SB](figure/SB.png)</center> -->
+
+<p><center><img width=800px height=700px src="figure/SB.png"></img></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Animation of Chinese Restaurant Process (CRP)</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- <center>![CRP](figure/example_1.gif)</center> -->
+
+<p><center><img width=500px height=500px src="figure/example_1.gif"></img></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Simulation of Asymptotics</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Asymptotics of \(K_n\): Number of clusters</p>
+
+<ul>
+<li>Theorem: \(\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta\) almost surely. \((\theta_0=2)\)</li>
+</ul>
+
+<p><img src="figure/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Simulation of Asymptotics</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Asymptotic distribution of \(K_n\): \[\frac{K_n-\mathbb{E}K_n}{\sqrt{\text{Var}(K_n)}} \Rightarrow \mathcal{N}(0,1)\]</li>
+</ul>
+
+<p><center><img src="figure/Them10.6.png" alt="Theorem 10.6"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
     <h2>MCMC &amp; Gibbs Sampler</h2>
   </hgroup>
   <article data-timings="">
     <ol>
-<li><p><strong>Markov chain Monte Carlo simulation(MCMC):</strong> is a general method based on drawing values of θ from approximate distributions and then correcting those draws to better approximate the target posterior distribution, p(θ|y). </p></li>
-<li><p><strong>Gibbs Sampler:</strong> also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others (\(\theta = (\theta_1, \cdots , \theta_d)\)).</p></li>
+<li><p><strong>Markov chain Monte Carlo simulation(MCMC):</strong> is a general method based on drawing values of \(\theta\) from approximate distributions and then correcting those draws to better approximate the target posterior distribution, \(p(\theta|y)\). </p></li>
+<li><p><strong>Gibbs Sampler:</strong> also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others \((\theta = (\theta_1, \cdots , \theta_d))\).</p></li>
 </ol>
 
-<p><center><img src="figure/Them10.6.png" alt="Theorem 10.6"></p>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>DPMM &amp; Gibbs Sampler Algorithm</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>DPMM: \[\begin{array} {l}
+G_0 \sim \mathcal{N}(0,2) \\
+\theta \sim G_0 \\
+X \sim \mathcal{N}(\theta, 1)
+\end{array}\]</p>
+
+<p>Then, Likelihood function: \(F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}\)</p>
+
+<p>\(\int{F(y_i, \theta)dG_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}\)</p>
+
+<p>and posterior distribution \(H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}\)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>DPMM &amp; Gibbs Sampler Algorithm</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>\[\begin{array}
+{ll}
+\hline
+\textbf{Algorithm:} & \text{Gibbs Sampler for DPMM}  \\
+\hline
+1.\mathbf{Input:}   & \mathbf{y} \in \mathbb{R}^n,\;  \\
+    & \theta_i \in (0,1), i=1,\cdots, n \\
+2. \mathbf{Repeat:} & (1) \;  q^*_{i,j} =  F(y_i, \theta_i) \\
+                    & (2) \;  r^*_{i} = \int F(y_i, \theta_i) d G_0(\theta) \\
+                    & (3) \;  b_{i} = 1/(\sum^n_{j=1} q^*_{i,j} + r^*_{i} ) \\
+                    & (4) \;  \text{Draw} \; \theta^t_{i}|\theta^t_{-i,y_i} \sim \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
+                    & (5) \;  \text{Update} \; i=1, \cdots, n \\
+3. \mathbf{Deliver:} & \hat\theta = \theta^{(t)} \\
+\hline
+\end{array}\]</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -179,14 +293,50 @@
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=4 title='Stick-Breaking and CRP'>
+        data-slide=4 title='Stick-Breaking construction'>
          4
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=5 title='MCMC &amp; Gibbs Sampler'>
+        data-slide=5 title='Stick-Breaking construction'>
          5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='Animation of Chinese Restaurant Process (CRP)'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Simulation of Asymptotics'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Simulation of Asymptotics'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='MCMC &amp; Gibbs Sampler'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='DPMM &amp; Gibbs Sampler Algorithm'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='DPMM &amp; Gibbs Sampler Algorithm'>
+         11
       </a>
     </li>
   </ul>

@@ -9,7 +9,7 @@ highlighter : highlight.js  # {highlight.js, prettify, highlight}
 hitheme     : tomorrow      # 
 widgets     : [mathjax, bootstrap, quiz, shiny, interactive]
 ext_widgets : {rCharts: [libraries/nvd3, libraries/highcharts]}
-mode        : selfcontained # {standalone, draft}
+mode        : selfcontained  # {selfcontained, standalone, draft}
 knit        : slidify::knit2slides
 logo        : logo.png
 ---
@@ -43,7 +43,10 @@ logo        : logo.png
 
 ## Dirichlet Process
 
-$DP$ is a random measure defined as $$\mu = \sum^{\infty}_{n=1} p_n \delta_{\phi_n}, $$ where $(p_n)_{n\in N}$ are random weights by stick-breaking construction with parameter $\theta$ and $(\phi_n)_{n\in N} \overset{iid}{\sim} G_0$ "the base measure". 
+$DP$ is a random measure defined as: $$\mu = \sum^{\infty}_{n=1} p_n \delta_{\phi_n}, $$ where:
+
+- $(p_n)_{n\in N}$ are random weights by stick-breaking construction with parameter $\theta$
+- and $(\phi_n)_{n\in N} \overset{iid}{\sim} G_0$ is "the base measure". 
 
 Therefore, $\mu \sim DP(\theta, G_0)$ has following repressentation: 
 
@@ -54,14 +57,45 @@ $$\begin{array}
   \phi_i & \overset{iid}{\sim} \; G_0
   \end{array}$$
 
+
 ---
+## Stick-Breaking construction
 
-## Stick-Breaking and CRP
+<!-- Stick-breaking construction of Poisson-Dirichlet random partition $(0,θ)$.  -->
 
-1. CRP Theorem 10.5: $\text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta$ almost surely. 
-2.  
-3.
-4. 
+Let $(V_n)_{n\in N}$ be i.i.d. $\text{Beta}(1,\theta)$ random variables.
+
+That is, $P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.$
+
+Consider
+$$\begin{array}
+  {rl}
+  P_1 & := \;  V_1 \\
+  P_2 & := (1-V_1)V_2 \\
+  P_3 & := (1-V_1)(1-V_2)V_3 \\
+      & \vdots \\
+  P_{n+1} & := \displaystyle V_n \prod^{n-1}_{j=1}(1-V_j)
+  \end{array}$$
+
+
+---
+## Stick-Breaking construction
+
+<!-- <center>![SB](figure/SB.png)</center> -->
+<center><img width=800px height=700px src="figure/SB.png"></img></center>
+
+---
+## Animation of Chinese Restaurant Process (CRP)
+
+<!-- <center>![CRP](figure/example_1.gif)</center> -->
+<center><img width=500px height=500px src="figure/example_1.gif"></img></center>
+
+---
+## Simulation of Asymptotics
+
+Asymptotics of $K_n$: Number of clusters
+
+- Theorem: $\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta$ almost surely. $(\theta_0=2)$
 
 ```{r echo = F, results = 'asis', fig.width=6, fig.height=5, fig.align='center'}
 load(file = "data/Them10_5.Rdata")
@@ -69,14 +103,54 @@ plot(Them10_5$ratio~Them10_5$n, type="l")
 ```
 
 ---
+## Simulation of Asymptotics
 
-## MCMC & Gibbs Sampler
-
-1. **Markov chain Monte Carlo simulation(MCMC):** is a general method based on drawing values of θ from approximate distributions and then correcting those draws to better approximate the target posterior distribution, p(θ|y). 
-
-2. **Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others ($\theta = (\theta_1, \cdots , \theta_d)$).
+- Asymptotic distribution of $K_n$: $$\frac{K_n-\mathbb{E}K_n}{\sqrt{\text{Var}(K_n)}} \Rightarrow \mathcal{N}(0,1)$$
 
 <center>![Theorem 10.6](figure/Them10.6.png)
+
+---
+## MCMC & Gibbs Sampler
+
+1. **Markov chain Monte Carlo simulation(MCMC):** is a general method based on drawing values of $\theta$ from approximate distributions and then correcting those draws to better approximate the target posterior distribution, $p(\theta|y)$. 
+
+2. **Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(\theta = (\theta_1, \cdots , \theta_d))$.
+
+---
+## DPMM & Gibbs Sampler Algorithm
+
+DPMM: $$\begin{array} {l}
+G_0 \sim \mathcal{N}(0,2) \\
+\theta \sim G_0 \\
+X \sim \mathcal{N}(\theta, 1)
+\end{array}$$
+
+Then, Likelihood function: $F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}$
+
+$\int{F(y_i, \theta)dG_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
+
+and posterior distribution $H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}$
+
+---
+## DPMM & Gibbs Sampler Algorithm
+
+$$\begin{array}
+{ll}
+\hline
+\textbf{Algorithm:} & \text{Gibbs Sampler for DPMM}  \\
+\hline
+1.\mathbf{Input:}   & \mathbf{y} \in \mathbb{R}^n,\;  \\
+    & \theta_i \in (0,1), i=1,\cdots, n \\
+2. \mathbf{Repeat:} & (1) \;  q^*_{i,j} =  F(y_i, \theta_i) \\
+                    & (2) \;  r^*_{i} = \int F(y_i, \theta_i) d G_0(\theta) \\
+                    & (3) \;  b_{i} = 1/(\sum^n_{j=1} q^*_{i,j} + r^*_{i} ) \\
+                    & (4) \;  \text{Draw} \; \theta^t_{i}|\theta^t_{-i,y_i} \sim \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
+                    & (5) \;  \text{Update} \; i=1, \cdots, n \\
+3. \mathbf{Deliver:} & \hat\theta = \theta^{(t)} \\
+\hline
+\end{array}$$
+
+
 
 ```{r echo = F, results = 'asis', fig.width=10,fig.height=7, fig.align="center"}
 
