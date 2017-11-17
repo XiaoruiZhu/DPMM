@@ -206,7 +206,7 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
 
 <ul>
 <li><p>Likelihood function: \(F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}\)</p></li>
-<li><p>\(\int{F(y_i, \theta)dG_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}\)</p></li>
+<li><p>\(\int{F(y_i, \theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}\)</p></li>
 <li><p>Posterior distribution \(H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}\)</p></li>
 </ul>
 
@@ -244,13 +244,41 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
     <h2>Convergency of Algorithms</h2>
   </hgroup>
   <article data-timings="">
-    <p><img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" /></p>
+    <p>Figure below shows the convergency of total number of clusters \((K_n)\) by changing iteration times \((M)\) of Gibbs Sampler(Algorithm 1). </p>
+
+<p>\((N=100, M\in (2,7,20,54,148,403), Rep=100)\)</p>
+
+<ul>
+<li>Algorithm 1 converge very quick. </li>
+<li>When \(M>50\), total number of cluster from Gibbs Sampler is acceptable. </li>
+</ul>
+
+<p><img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" /></p>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
 <slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Convergency of Algorithms</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Histogram for every given M:</p>
+
+<ul>
+<li>Total number of cluster approach the truth (\(n^0_c=10\))</li>
+</ul>
+
+<!-- <center>![Convergency of Algorithm](figure/Covg_M.png) -->
+
+<p><center><img width=600px height=600px src="figure/Covg_M.png"></img></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
   <hgroup>
     <h2>Stick-Breaking construction</h2>
   </hgroup>
@@ -275,7 +303,7 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-12" style="background:;">
+<slide class="" id="slide-13" style="background:;">
   <hgroup>
     <h2>Stick-Breaking construction</h2>
   </hgroup>
@@ -288,7 +316,7 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-13" style="background:;">
+<slide class="" id="slide-14" style="background:;">
   <hgroup>
     <h2>Animation of Chinese Restaurant Process (CRP)</h2>
   </hgroup>
@@ -367,7 +395,7 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=11 title='Stick-Breaking construction'>
+        data-slide=11 title='Convergency of Algorithms'>
          11
       </a>
     </li>
@@ -379,8 +407,14 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=13 title='Animation of Chinese Restaurant Process (CRP)'>
+        data-slide=13 title='Stick-Breaking construction'>
          13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='Animation of Chinese Restaurant Process (CRP)'>
+         14
       </a>
     </li>
   </ul>

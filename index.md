@@ -12,6 +12,7 @@ ext_widgets : {rCharts: [libraries/nvd3, libraries/highcharts]}
 mode        : selfcontained  # {selfcontained, standalone, draft}
 knit        : slidify::knit2slides
 logo        : logo.png
+fig_caption : true
 ---
 
 ---
@@ -106,7 +107,7 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
 Then: 
 - Likelihood function: $F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}$
 
-- $\int{F(y_i, \theta)dG_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
+- $\int{F(y_i, \theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
 
 - Posterior distribution $H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}$
 
@@ -134,8 +135,24 @@ $$\begin{array}
 ---
 ## Convergency of Algorithms 
 
+Figure below shows the convergency of total number of clusters $(K_n)$ by changing iteration times $(M)$ of Gibbs Sampler(Algorithm 1). 
+
+$(N=100, M\in (2,7,20,54,148,403), Rep=100)$
+
+- Algorithm 1 converge very quick. 
+- When $M>50$, total number of cluster from Gibbs Sampler is acceptable. 
+
 <img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
 
+---
+## Convergency of Algorithms 
+
+Histogram for every given M:
+
+- Total number of cluster approach the truth ($n^0_c=10$)
+
+<!-- <center>![Convergency of Algorithm](figure/Covg_M.png) -->
+<center><img width=600px height=600px src="figure/Covg_M.png"></img></center>
 
 ---
 ## Stick-Breaking construction

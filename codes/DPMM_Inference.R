@@ -55,7 +55,7 @@ table(Test1$Center)
 2*log(200)
 
 plot(
-  table( DPMM_CRP(num_customers = 1000, 2)$Table_ID )
+  table( DPMM_CRP(num_customers = 1000, 100)$Table_ID )
   ,xlab="Table Index", ylab="Frequency", 
   main = "Chinese Restaurant Process"
 )
@@ -170,18 +170,84 @@ Covg_M <- function(Ser_M, y) {
   list(NTables=data.frame(M=Ser_M, Tables=Num_Table), End_Tables=theta)
 }
 
-Ser_M <- c(20000)
+# 
 DPMM_Data <- DPMM_CRP(100, 2)
 y <- DPMM_Data$X
-Test1 <- Covg_M(Ser_M, y)
+
+# Draw graph to show convergency of algorithm
+Sim_M <-  floor(exp(c(1:7)))
+Repp_1 <- replicate(100, 
+                    {Test1 <- Covg_M(Sim_M[1], y)
+                    Test1$NTables[,2]})
+Repp_2 <- replicate(100, 
+                    {Test1 <- Covg_M(Sim_M[2], y)
+                    Test1$NTables[,2]})
+Repp_3 <- replicate(100, 
+                    {Test1 <- Covg_M(Sim_M[3], y)
+                    Test1$NTables[,2]})
+Repp_4 <- replicate(100, 
+                    {Test1 <- Covg_M(Sim_M[4], y)
+                    Test1$NTables[,2]})
+Repp_5 <- replicate(100, 
+                    {Test1 <- Covg_M(Sim_M[5], y)
+                    Test1$NTables[,2]})
+Repp_6 <- replicate(100, 
+                    {Test1 <- Covg_M(Sim_M[6], y)
+                    Test1$NTables[,2]})
+Repp_try <- replicate(10, 
+                    {Test1 <- Covg_M(Sim_M[7], y)
+                    Test1$NTables[,2]})
+Repp_try
+par(mfrow=c(2,3))
+hist(Repp_1, breaks = 20, main = "M=2", 
+     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_1)), max(Repp_1))); 
+abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
+hist(Repp_2, breaks = 20, main = "M=7", 
+     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_2)), max(Repp_2))); 
+abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
+hist(Repp_3, breaks = 20, main = "M=20", 
+     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_3)), max(Repp_3))); 
+abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
+hist(Repp_4, breaks = 20, main = "M=54", 
+     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_4)), max(Repp_4))); 
+abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
+hist(Repp_5, breaks = 20, main = "M=148", 
+     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_5)), max(Repp_5))); 
+abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
+hist(Repp_6, breaks = 20, main = "M=403", 
+     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_6)), max(Repp_6))); 
+abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
+
+# Show parameters comparison
+Test1 <- Covg_M(600, y)
 Test1$NTables; table(DPMM_Data$Table_ID)
 
-table(Test1$End_Tables);
-table(DPMM_Data$Center)
+names(table(DPMM_Data$Center)); table(DPMM_Data$Center)
+Data_Plot <- data.frame(T)
+cbind(table( Test1$End_Tables) , names(table(DPMM_Data$Center)), table(DPMM_Data$Center))
+plot(table( round(Test1$End_Tables, digits = 3)) )
+plot(table(round(DPMM_Data$Center, digits = 3)))
+
+cbind(DPMM_Data$Center, Test1$End_Tables)
+# table(Test1$End_Tables); table(DPMM_Data$Center)
+
+Sim_M <-  floor(exp(c(1:7))) # floor(exp(c(1:2))) 
+Sim_N <- 100
+NT_i <- c(); Avg_NT <- c() # average number of tables
+
+for (j in 1:length(Sim_M)) {
+  for (i in 1:Sim_N) {
+    NT_i[i] <- Covg_M(Sim_M[j], y)$NTables$Tables
+  }
+  Avg_NT[j] <- mean(NT_i)
+}
+
+Result_Covg <- data.frame(Sim_M=Sim_M, Avg_NT=Avg_NT)
+All <- list(Result_Covg=Result_Covg, Data=DPMM_Data)
+save(All, file = "data/Covg_M.Rdata")
+
 
 # Gibbs Sampling: Algorithm 3 ---------------------------------------------
-
-# Algorithm2 --------------------------------------------------------------
 Ser_M <- c(1:50,100, 200)
 Ser_M <- 10
 DPMM_Data <- DPMM_CRP(1000, 2)

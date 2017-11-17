@@ -12,6 +12,7 @@ ext_widgets : {rCharts: [libraries/nvd3, libraries/highcharts]}
 mode        : selfcontained  # {selfcontained, standalone, draft}
 knit        : slidify::knit2slides
 logo        : logo.png
+fig_caption : true
 ---
 
 ---
@@ -139,7 +140,14 @@ $$\begin{array}
 ---
 ## Convergency of Algorithms 
 
-```{r echo = F, results = 'asis', fig.width=6, fig.height=5, fig.align='center'}
+Figure below shows the convergency of total number of clusters $(K_n)$ by changing iteration times $(M)$ of Gibbs Sampler(Algorithm 1). 
+
+$(N=100, M\in (2,7,20,54,148,403), Rep=100)$
+
+- Algorithm 1 converge very quick. 
+- When $M>50$, total number of cluster from Gibbs Sampler is acceptable. 
+
+```{r echo = F, results = 'asis', fig.width=5, fig.height=5, fig.align='center'}
 load(file = "data/Covg_M.Rdata")
 Result_Covg2 <- All$Result_Covg[1:6, ]
 # Graph to show M
@@ -156,6 +164,15 @@ ggplot(data=Result_Covg2, aes(x=Sim_M, y=Avg_NT, group=1)) +
 # abline(h= dim(table(All$Data$Table_ID)), col="red")
 ```
 
+---
+## Convergency of Algorithms 
+
+Histogram for every given M:
+
+- Total number of cluster approach the truth ($n^0_c=10$)
+
+<!-- <center>![Convergency of Algorithm](figure/Covg_M.png) -->
+<center><img width=600px height=600px src="figure/Covg_M.png"></img></center>
 
 ---
 ## Stick-Breaking construction
