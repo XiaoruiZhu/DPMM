@@ -40,7 +40,6 @@ logo        : logo.png
 <!-- *** .explanation -->
 
 --- 
-
 ## Dirichlet Process
 
 $DP$ is a random measure defined as: $$\mu = \sum^{\infty}_{n=1} p_n \delta_{\phi_n}, $$ where:
@@ -58,37 +57,6 @@ $$\begin{array}
   \end{array}$$
 
 
----
-## Stick-Breaking construction
-
-<!-- Stick-breaking construction of Poisson-Dirichlet random partition $(0,θ)$.  -->
-
-Let $(V_n)_{n\in N}$ be i.i.d. $\text{Beta}(1,\theta)$ random variables.
-
-That is, $P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.$
-
-Consider
-$$\begin{array}
-  {rl}
-  P_1 & := \;  V_1 \\
-  P_2 & := (1-V_1)V_2 \\
-  P_3 & := (1-V_1)(1-V_2)V_3 \\
-      & \vdots \\
-  P_{n+1} & := \displaystyle V_n \prod^{n-1}_{j=1}(1-V_j)
-  \end{array}$$
-
-
----
-## Stick-Breaking construction
-
-<!-- <center>![SB](figure/SB.png)</center> -->
-<center><img width=800px height=700px src="figure/SB.png"></img></center>
-
----
-## Animation of Chinese Restaurant Process (CRP)
-
-<!-- <center>![CRP](figure/example_1.gif)</center> -->
-<center><img width=500px height=500px src="figure/example_1.gif"></img></center>
 
 ---
 ## Simulation of Asymptotics
@@ -116,17 +84,31 @@ Asymptotics of $K_n$: Number of clusters
 ---
 ## DPMM & Gibbs Sampler Algorithm
 
-DPMM: $$\begin{array} {l}
-G_0 \sim \mathcal{N}(0,2) \\
-\theta \sim G_0 \\
-X \sim \mathcal{N}(\theta, 1)
+Simple Mixture Model: $$\begin{array} {l}
+X|\theta_i \sim \mathcal{N}(\theta_i, 1) \\
+\theta_i \sim G \\
+G \sim DP(\alpha, G_0) \\
+G_0 \sim \mathcal{N}(0,2) 
 \end{array}$$
 
-Then, Likelihood function: $F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}$
+---
+## DPMM & Gibbs Sampler Algorithm
 
-$\int{F(y_i, \theta)dG_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
+The conditional distribution for Gibbs sampling is as following: 
 
-and posterior distribution $H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}$
+$$\begin{array}
+{rl}
+\theta^t_{i}|\theta^t_{-i,y_i} \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
+q_{i,j} =                           & b F(y_i, \theta_j) \\
+r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
+\end{array}$$
+
+Then: 
+- Likelihood function: $F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}$
+
+- $\int{F(y_i, \theta)dG_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
+
+- Posterior distribution $H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}$
 
 ---
 ## DPMM & Gibbs Sampler Algorithm
@@ -149,8 +131,41 @@ $$\begin{array}
 
 
 
+---
+## Convergency of Algorithms 
+
+<img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
 
 
+---
+## Stick-Breaking construction
+
+Stick-breaking construction of Poisson-Dirichlet random partition $(0,θ)$.
+
+Let $(V_n)_{n\in N}$ be i.i.d. $\text{Beta}(1,\theta)$ random variables.
+
+That is, $P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.$
+
+Consider
+$$\begin{array}
+  {rl}
+  P_1 & := \;  V_1 \\
+  P_2 & := (1-V_1)V_2 \\
+  P_3 & := (1-V_1)(1-V_2)V_3 \\
+      & \vdots \\
+  P_{n+1} & := \displaystyle V_n \prod^{n-1}_{j=1}(1-V_j)
+  \end{array}$$
 
 
+---
+## Stick-Breaking construction
+
+<!-- <center>![SB](figure/SB.png)</center> -->
+<center><img width=800px height=700px src="figure/SB.png"></img></center>
+
+---
+## Animation of Chinese Restaurant Process (CRP)
+
+<!-- <center>![CRP](figure/example_1.gif)</center> -->
+<center><img width=500px height=500px src="figure/example_1.gif"></img></center>
 

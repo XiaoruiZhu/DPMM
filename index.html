@@ -128,57 +128,6 @@
 
 <slide class="" id="slide-4" style="background:;">
   <hgroup>
-    <h2>Stick-Breaking construction</h2>
-  </hgroup>
-  <article data-timings="">
-    <!-- Stick-breaking construction of Poisson-Dirichlet random partition $(0,θ)$.  -->
-
-<p>Let \((V_n)_{n\in N}\) be i.i.d. \(\text{Beta}(1,\theta)\) random variables.</p>
-
-<p>That is, \(P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.\)</p>
-
-<p>Consider
-\[\begin{array}
-  {rl}
-  P_1 & := \;  V_1 \\
-  P_2 & := (1-V_1)V_2 \\
-  P_3 & := (1-V_1)(1-V_2)V_3 \\
-      & \vdots \\
-  P_{n+1} & := \displaystyle V_n \prod^{n-1}_{j=1}(1-V_j)
-  \end{array}\]</p>
-
-  </article>
-  <!-- Presenter Notes -->
-</slide>
-
-<slide class="" id="slide-5" style="background:;">
-  <hgroup>
-    <h2>Stick-Breaking construction</h2>
-  </hgroup>
-  <article data-timings="">
-    <!-- <center>![SB](figure/SB.png)</center> -->
-
-<p><center><img width=800px height=700px src="figure/SB.png"></img></center></p>
-
-  </article>
-  <!-- Presenter Notes -->
-</slide>
-
-<slide class="" id="slide-6" style="background:;">
-  <hgroup>
-    <h2>Animation of Chinese Restaurant Process (CRP)</h2>
-  </hgroup>
-  <article data-timings="">
-    <!-- <center>![CRP](figure/example_1.gif)</center> -->
-
-<p><center><img width=500px height=500px src="figure/example_1.gif"></img></center></p>
-
-  </article>
-  <!-- Presenter Notes -->
-</slide>
-
-<slide class="" id="slide-7" style="background:;">
-  <hgroup>
     <h2>Simulation of Asymptotics</h2>
   </hgroup>
   <article data-timings="">
@@ -194,7 +143,7 @@
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-8" style="background:;">
+<slide class="" id="slide-5" style="background:;">
   <hgroup>
     <h2>Simulation of Asymptotics</h2>
   </hgroup>
@@ -209,7 +158,7 @@
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-9" style="background:;">
+<slide class="" id="slide-6" style="background:;">
   <hgroup>
     <h2>MCMC &amp; Gibbs Sampler</h2>
   </hgroup>
@@ -223,28 +172,49 @@
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-10" style="background:;">
+<slide class="" id="slide-7" style="background:;">
   <hgroup>
     <h2>DPMM &amp; Gibbs Sampler Algorithm</h2>
   </hgroup>
   <article data-timings="">
-    <p>DPMM: \[\begin{array} {l}
-G_0 \sim \mathcal{N}(0,2) \\
-\theta \sim G_0 \\
-X \sim \mathcal{N}(\theta, 1)
+    <p>Simple Mixture Model: \[\begin{array} {l}
+X|\theta_i \sim \mathcal{N}(\theta_i, 1) \\
+\theta_i \sim G \\
+G \sim DP(\alpha, G_0) \\
+G_0 \sim \mathcal{N}(0,2) 
 \end{array}\]</p>
-
-<p>Then, Likelihood function: \(F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}\)</p>
-
-<p>\(\int{F(y_i, \theta)dG_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}\)</p>
-
-<p>and posterior distribution \(H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}\)</p>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-11" style="background:;">
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>DPMM &amp; Gibbs Sampler Algorithm</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The conditional distribution for Gibbs sampling is as following: </p>
+
+<p>\[\begin{array}
+{rl}
+\theta^t_{i}|\theta^t_{-i,y_i} \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
+q_{i,j} =                           & b F(y_i, \theta_j) \\
+r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
+\end{array}\]</p>
+
+<p>Then: </p>
+
+<ul>
+<li><p>Likelihood function: \(F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}\)</p></li>
+<li><p>\(\int{F(y_i, \theta)dG_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}\)</p></li>
+<li><p>Posterior distribution \(H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}\)</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
   <hgroup>
     <h2>DPMM &amp; Gibbs Sampler Algorithm</h2>
   </hgroup>
@@ -264,6 +234,68 @@ X \sim \mathcal{N}(\theta, 1)
 3. \mathbf{Deliver:} & \hat\theta = \theta^{(t)} \\
 \hline
 \end{array}\]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Convergency of Algorithms</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Stick-Breaking construction</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Stick-breaking construction of Poisson-Dirichlet random partition \((0,θ)\).</p>
+
+<p>Let \((V_n)_{n\in N}\) be i.i.d. \(\text{Beta}(1,\theta)\) random variables.</p>
+
+<p>That is, \(P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.\)</p>
+
+<p>Consider
+\[\begin{array}
+  {rl}
+  P_1 & := \;  V_1 \\
+  P_2 & := (1-V_1)V_2 \\
+  P_3 & := (1-V_1)(1-V_2)V_3 \\
+      & \vdots \\
+  P_{n+1} & := \displaystyle V_n \prod^{n-1}_{j=1}(1-V_j)
+  \end{array}\]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Stick-Breaking construction</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- <center>![SB](figure/SB.png)</center> -->
+
+<p><center><img width=800px height=700px src="figure/SB.png"></img></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Animation of Chinese Restaurant Process (CRP)</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- <center>![CRP](figure/example_1.gif)</center> -->
+
+<p><center><img width=500px height=500px src="figure/example_1.gif"></img></center></p>
 
   </article>
   <!-- Presenter Notes -->
@@ -293,50 +325,62 @@ X \sim \mathcal{N}(\theta, 1)
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=4 title='Stick-Breaking construction'>
+        data-slide=4 title='Simulation of Asymptotics'>
          4
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=5 title='Stick-Breaking construction'>
+        data-slide=5 title='Simulation of Asymptotics'>
          5
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=6 title='Animation of Chinese Restaurant Process (CRP)'>
+        data-slide=6 title='MCMC &amp; Gibbs Sampler'>
          6
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=7 title='Simulation of Asymptotics'>
+        data-slide=7 title='DPMM &amp; Gibbs Sampler Algorithm'>
          7
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=8 title='Simulation of Asymptotics'>
+        data-slide=8 title='DPMM &amp; Gibbs Sampler Algorithm'>
          8
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=9 title='MCMC &amp; Gibbs Sampler'>
+        data-slide=9 title='DPMM &amp; Gibbs Sampler Algorithm'>
          9
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=10 title='DPMM &amp; Gibbs Sampler Algorithm'>
+        data-slide=10 title='Convergency of Algorithms'>
          10
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=11 title='DPMM &amp; Gibbs Sampler Algorithm'>
+        data-slide=11 title='Stick-Breaking construction'>
          11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Stick-Breaking construction'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='Animation of Chinese Restaurant Process (CRP)'>
+         13
       </a>
     </li>
   </ul>
