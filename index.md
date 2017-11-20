@@ -80,8 +80,8 @@ $$\begin{array}
 ---
 ## Stick-Breaking construction
 
-<center>![SB](figure/SB.GIF)</center>
-<!-- <center><img width=700px height=700px src="figure/SB.png"></img></center> -->
+<!-- <center>![SB](figure/SB.GIF)</center> -->
+<center><img width=800px height=700px src="figure/SB.GIF"></img></center>
 
 ---
 ## Chinese Restaurant Process (CRP)
@@ -114,7 +114,7 @@ Asymptotics of $K_n$: Number of clusters
 
 - **Theorem:** $\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta$ almost surely.
 
-<img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
 
 ---
 ## Simulation of Asymptotics
@@ -202,7 +202,7 @@ Average total number of clusters $(K_n)$ v.s iteration times $(M)$ of Gibbs Samp
 
 $(N=100, M\in (2,7,20,54,148,403), \text{Rep}=100)$
 
-<img src="assets/fig/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
 
 - Algorithm 1 converge very quick. 
 - When $M>50$, total number of cluster from Gibbs Sampler is acceptable. 
