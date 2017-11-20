@@ -101,7 +101,7 @@ $$p(c_n=k|c_{1:(n-1)}) = \{ \begin{array}
   \end{array} $$
 
 ---
-## Animation of Chinese Restaurant Process (CRP)
+## Animation of (CRP)
 
 <!-- <center>![CRP](figure/example_1.gif)</center> -->
 <center><img width=500px height=500px src="figure/example_1.gif"></img></center>
@@ -168,8 +168,9 @@ The conditional distribution for Gibbs sampling is as following:
 $$\begin{array}
 {rl}
 \theta^t_{i}|\theta^t_{-i},y_i \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
-q_{i,j} =                           & b F(y_i, \theta_j) \\
-r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
+q_{i,j} =                           & b_i F(y_i, \theta_j) \\
+r_i =                               & b_i \alpha \int F(y_i, \theta)G_0(\theta) \\
+\text{where } b_i \text{ satisfied}                                & \sum_{j\ne i}q_{i,j} + r_i = 1
 \end{array}$$
 
 - $\int{F(y_i|\theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
