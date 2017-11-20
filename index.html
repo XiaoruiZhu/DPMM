@@ -71,8 +71,8 @@
   <article data-timings="">
     <ol>
 <li>Stick-Breaking and Chinese Restaurant Process</li>
-<li>Data Generating and Power Law</li>
 <li>Dirichlet Process Mixture Models</li>
+<li>Conjugate Prior</li>
 <li>Gibbs Sampling Algorithms</li>
 <li>Simulation results</li>
 </ol>
@@ -128,16 +128,23 @@
 
 <slide class="" id="slide-4" style="background:;">
   <hgroup>
-    <h2>Simulation of Asymptotics</h2>
+    <h2>Stick-Breaking construction</h2>
   </hgroup>
   <article data-timings="">
-    <p>Asymptotics of \(K_n\): Number of clusters</p>
+    <p>Let \((V_n)_{n\in N}\) be i.i.d. \(\text{Beta}(1,\theta)\) random variables.</p>
 
-<ul>
-<li>Theorem: \(\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta\) almost surely. \((\theta_0=2)\)</li>
-</ul>
+<p>That is, \(P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.\)</p>
 
-<p><img src="figure/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
+<p>Consider:</p>
+
+<p>\[\begin{array}
+  {rl}
+  P_1 & := \;  V_1 \\
+  P_2 & := (1-V_1)V_2 \\
+  P_3 & := (1-V_1)(1-V_2)V_3 \\
+      & \vdots \\
+  P_{n+1} & := \displaystyle V_n \prod^{n-1}_{j=1}(1-V_j)
+  \end{array}\]</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -145,11 +152,82 @@
 
 <slide class="" id="slide-5" style="background:;">
   <hgroup>
+    <h2>Stick-Breaking construction</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- <center>![SB](figure/SB.png)</center> -->
+
+<p><center><img width=800px height=700px src="figure/SB.png"></img></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Chinese Restaurant Process (CRP)</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Imagine a Chinese restaurant that has unlimited number of tables.</li>
+<li>First customer sits at the first table.</li>
+<li>Customer \(n\) sits at: 
+
+<ul>
+<li>Table \(k\) with probability \(n_k/(\alpha_0+n−1)\), where \(n_k\) is the number of customers
+at table \(k\).</li>
+<li>A new table \(k + 1\) with probability \(\alpha_0/(\alpha_0+n−1)\)</li>
+</ul></li>
+</ul>
+
+<p>In this metaphor, customers are analogies of integers and tables of clusters. This process can also be summarized as follows:
+\[p(c_n=k|c_{1:(n-1)}) = \{ \begin{array}
+  {l}
+  \frac{n_k}{\alpha_0+n−1 },  \; \text{if occupied table;} \\
+  \frac{\alpha_0}{\alpha_0+n−1}, \; \text{if new table} 
+  \end{array} \]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Animation of Chinese Restaurant Process (CRP)</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- <center>![CRP](figure/example_1.gif)</center> -->
+
+<p><center><img width=500px height=500px src="figure/example_1.gif"></img></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Simulation of Asymptotics</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Asymptotics of \(K_n\): Number of clusters</p>
+
+<ul>
+<li><strong>Theorem:</strong> \(\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta\) almost surely.</li>
+</ul>
+
+<p><img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
     <h2>Simulation of Asymptotics</h2>
   </hgroup>
   <article data-timings="">
     <ul>
-<li>Asymptotic distribution of \(K_n\): \[\frac{K_n-\mathbb{E}K_n}{\sqrt{\text{Var}(K_n)}} \Rightarrow \mathcal{N}(0,1)\]</li>
+<li><strong>Theorem:</strong> Asymptotic distribution of \(K_n\): \[\frac{K_n-\mathbb{E}K_n}{\sqrt{\text{Var}(K_n)}} \Rightarrow \mathcal{N}(0,1)\]</li>
 </ul>
 
 <p><center><img src="figure/Them10.6.png" alt="Theorem 10.6"></p>
@@ -158,7 +236,7 @@
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-6" style="background:;">
+<slide class="" id="slide-10" style="background:;">
   <hgroup>
     <h2>MCMC &amp; Gibbs Sampler</h2>
   </hgroup>
@@ -172,23 +250,47 @@
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-7" style="background:;">
+<slide class="" id="slide-11" style="background:;">
   <hgroup>
-    <h2>DPMM &amp; Gibbs Sampler Algorithm</h2>
+    <h2>Conjugate Prior is importants</h2>
   </hgroup>
   <article data-timings="">
-    <p>Simple Mixture Model: \[\begin{array} {l}
-X|\theta_i \sim \mathcal{N}(\theta_i, 1) \\
-\theta_i \sim G \\
-G \sim DP(\alpha, G_0) \\
-G_0 \sim \mathcal{N}(0,2) 
-\end{array}\]</p>
+    <p>If the posterior distributions \(p(\theta|x)\) are in the <strong>same family as the prior probability distribution</strong> \(p(\theta)\) , the prior and posterior are then called conjugate distributions, and the prior is called <strong>a conjugate prior</strong> for the likelihood function.</p>
+
+<p><strong>Model parameter</strong> \(\mu\): mean of Normal with known variance \(\sigma^2\). </p>
+
+<p>Prior of \(\mu\) is \(\mathcal{N}(\mu_0, \sigma^2_0)\)</p>
+
+<p>By derivation, posterior distribution is :</p>
+
+<p>\[\mathcal{N}\Bigg(\Bigg(\frac{1}{\sigma _{0}^{2}}+\frac{n}{\sigma ^{2}} \Bigg)^{-1} \Bigg(\frac{\mu _{0}}{\sigma _{0}^{2}}+\frac{\sum _{i=1}^{n}x_{i}}{\sigma^{2}}\Bigg),\Bigg(\frac {1}{\sigma _{0}^{2}}+\frac{n}{\sigma ^{2}}\Bigg)^{-1}\Bigg)\]</p>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-8" style="background:;">
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>DPMM &amp; Gibbs Sampler Algorithm</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Simple Mixture Model: \[\begin{array} {l}
+y|\theta_i \sim \mathcal{N}(\theta_i, 1) \\
+\theta_i \sim G \\
+G \sim DP(\alpha, G_0) \\
+G_0 \sim \mathcal{N}(0,2) 
+\end{array}\]</p>
+
+<ul>
+<li><p>Likelihood function: \(F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}\)</p></li>
+<li><p>Posterior distribution \(H_i = p(\theta|y_i)= \frac{F(y_i|\theta)G_0(\theta)}{\int{F(y_i|\theta)G_0(\theta)}}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{(\theta - \frac{2}{3}y_i)^2}{2 * (2/3)}}\)</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
   <hgroup>
     <h2>DPMM &amp; Gibbs Sampler Algorithm</h2>
   </hgroup>
@@ -197,24 +299,21 @@ G_0 \sim \mathcal{N}(0,2)
 
 <p>\[\begin{array}
 {rl}
-\theta^t_{i}|\theta^t_{-i,y_i} \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
+\theta^t_{i}|\theta^t_{-i},y_i \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
 q_{i,j} =                           & b F(y_i, \theta_j) \\
 r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
 \end{array}\]</p>
 
-<p>Then: </p>
-
 <ul>
-<li><p>Likelihood function: \(F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}\)</p></li>
-<li><p>\(\int{F(y_i, \theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}\)</p></li>
-<li><p>Posterior distribution \(H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}\)</p></li>
+<li><p>\(\int{F(y_i|\theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}\)</p></li>
+<li><p>or another simple way: \(\Big(= \frac{F(y_i|\theta)G_0(\theta)}{H_i(\theta|y_i)}\Big)\)</p></li>
 </ul>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-9" style="background:;">
+<slide class="" id="slide-14" style="background:;">
   <hgroup>
     <h2>DPMM &amp; Gibbs Sampler Algorithm</h2>
   </hgroup>
@@ -227,9 +326,9 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
 1.\mathbf{Input:}   & \mathbf{y} \in \mathbb{R}^n,\;  \\
     & \theta_i \in (0,1), i=1,\cdots, n \\
 2. \mathbf{Repeat:} & (1) \;  q^*_{i,j} =  F(y_i, \theta_i) \\
-                    & (2) \;  r^*_{i} = \int F(y_i, \theta_i) d G_0(\theta) \\
+                    & (2) \;  r^*_{i} = \alpha \int F(y_i, \theta_i) d G_0(\theta) \\
                     & (3) \;  b_{i} = 1/(\sum^n_{j=1} q^*_{i,j} + r^*_{i} ) \\
-                    & (4) \;  \text{Draw} \; \theta^t_{i}|\theta^t_{-i,y_i} \sim \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
+                    & (4) \;  \text{Draw} \; \theta^t_{i}|\theta^t_{-i,y_i} \sim \sum_{j\ne i} b_i q^*_{i,j} \delta(\theta^t_j) + b_i r^*_i H_i \\
                     & (5) \;  \text{Update} \; i=1, \cdots, n \\
 3. \mathbf{Deliver:} & \hat\theta = \theta^{(t)} \\
 \hline
@@ -239,91 +338,68 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-10" style="background:;">
+<slide class="" id="slide-15" style="background:;">
   <hgroup>
     <h2>Convergency of Algorithms</h2>
   </hgroup>
   <article data-timings="">
-    <p>Figure below shows the convergency of total number of clusters \((K_n)\) by changing iteration times \((M)\) of Gibbs Sampler(Algorithm 1). </p>
+    <p>Average total number of clusters \((K_n)\) v.s iteration times \((M)\) of Gibbs Sampler (Algorithm 1). </p>
 
-<p>\((N=100, M\in (2,7,20,54,148,403), Rep=100)\)</p>
+<p>\((N=100, M\in (2,7,20,54,148,403), \text{Rep}=100)\)</p>
+
+<p><img src="assets/fig/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" /></p>
 
 <ul>
 <li>Algorithm 1 converge very quick. </li>
 <li>When \(M>50\), total number of cluster from Gibbs Sampler is acceptable. </li>
 </ul>
 
-<p><img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" /></p>
-
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-11" style="background:;">
+<slide class="" id="slide-16" style="background:;">
   <hgroup>
     <h2>Convergency of Algorithms</h2>
   </hgroup>
   <article data-timings="">
-    <p>Histogram for every given M:</p>
-
-<ul>
-<li>Total number of cluster approach the truth (\(n^0_c=10\))</li>
-</ul>
+    <p>Histogram of 100 replications for every given M:</p>
 
 <!-- <center>![Convergency of Algorithm](figure/Covg_M.png) -->
 
 <p><center><img width=600px height=600px src="figure/Covg_M.png"></img></center></p>
 
-  </article>
-  <!-- Presenter Notes -->
-</slide>
-
-<slide class="" id="slide-12" style="background:;">
-  <hgroup>
-    <h2>Stick-Breaking construction</h2>
-  </hgroup>
-  <article data-timings="">
-    <p>Stick-breaking construction of Poisson-Dirichlet random partition \((0,θ)\).</p>
-
-<p>Let \((V_n)_{n\in N}\) be i.i.d. \(\text{Beta}(1,\theta)\) random variables.</p>
-
-<p>That is, \(P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.\)</p>
-
-<p>Consider
-\[\begin{array}
-  {rl}
-  P_1 & := \;  V_1 \\
-  P_2 & := (1-V_1)V_2 \\
-  P_3 & := (1-V_1)(1-V_2)V_3 \\
-      & \vdots \\
-  P_{n+1} & := \displaystyle V_n \prod^{n-1}_{j=1}(1-V_j)
-  \end{array}\]</p>
+<ul>
+<li>Total number of clusters approach the truth when M increases (\(n^0_c=10\))</li>
+</ul>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-13" style="background:;">
+<slide class="" id="slide-17" style="background:;">
   <hgroup>
-    <h2>Stick-Breaking construction</h2>
+    <h2>Inference of cluster center</h2>
   </hgroup>
   <article data-timings="">
-    <!-- <center>![SB](figure/SB.png)</center> -->
+    <p>Centers of clusters might be of interest to you. </p>
 
-<p><center><img width=800px height=700px src="figure/SB.png"></img></center></p>
+<p><center><img width=400px height=400px src="figure/2BestGibbs.png" align="left"></img>
+<img width=400px height=400px src="figure/BestGibbs.png" align="right"></img>
+</center></p>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-14" style="background:;">
+<slide class="" id="slide-18" style="background:;">
   <hgroup>
-    <h2>Animation of Chinese Restaurant Process (CRP)</h2>
+    <h2>Inference of cluster center</h2>
   </hgroup>
   <article data-timings="">
-    <!-- <center>![CRP](figure/example_1.gif)</center> -->
+    <p>Animation of Centers of each cluster (100 simulation): </p>
 
-<p><center><img width=500px height=500px src="figure/example_1.gif"></img></center></p>
+<p><center><img width=400px height=400px src="figure/AnimatedGibbsCenter.gif"></img></center></p>
 
   </article>
   <!-- Presenter Notes -->
@@ -353,68 +429,92 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=4 title='Simulation of Asymptotics'>
+        data-slide=4 title='Stick-Breaking construction'>
          4
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=5 title='Simulation of Asymptotics'>
+        data-slide=5 title='Stick-Breaking construction'>
          5
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=6 title='MCMC &amp; Gibbs Sampler'>
+        data-slide=6 title='Chinese Restaurant Process (CRP)'>
          6
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=7 title='DPMM &amp; Gibbs Sampler Algorithm'>
+        data-slide=7 title='Animation of Chinese Restaurant Process (CRP)'>
          7
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=8 title='DPMM &amp; Gibbs Sampler Algorithm'>
+        data-slide=8 title='Simulation of Asymptotics'>
          8
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=9 title='DPMM &amp; Gibbs Sampler Algorithm'>
+        data-slide=9 title='Simulation of Asymptotics'>
          9
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=10 title='Convergency of Algorithms'>
+        data-slide=10 title='MCMC &amp; Gibbs Sampler'>
          10
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=11 title='Convergency of Algorithms'>
+        data-slide=11 title='Conjugate Prior is importants'>
          11
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=12 title='Stick-Breaking construction'>
+        data-slide=12 title='DPMM &amp; Gibbs Sampler Algorithm'>
          12
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=13 title='Stick-Breaking construction'>
+        data-slide=13 title='DPMM &amp; Gibbs Sampler Algorithm'>
          13
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=14 title='Animation of Chinese Restaurant Process (CRP)'>
+        data-slide=14 title='DPMM &amp; Gibbs Sampler Algorithm'>
          14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='Convergency of Algorithms'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Convergency of Algorithms'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='Inference of cluster center'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='Inference of cluster center'>
+         18
       </a>
     </li>
   </ul>

@@ -19,10 +19,10 @@ fig_caption : true
 ## Contents
 
 1. Stick-Breaking and Chinese Restaurant Process
-2. Data Generating and Power Law
-3. Dirichlet Process Mixture Models
-4. Gibbs Sampling Algorithms
-5. Simulation results
+2. Dirichlet Process Mixture Models
+3. Conjugate Prior
+3. Gibbs Sampling Algorithms
+4. Simulation results
 
 <!-- --- &radio -->
 
@@ -58,112 +58,15 @@ $$\begin{array}
   \end{array}$$
 
 
-
----
-## Simulation of Asymptotics
-
-Asymptotics of $K_n$: Number of clusters
-
-- Theorem: $\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta$ almost surely. $(\theta_0=2)$
-
-<img src="figure/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
-
----
-## Simulation of Asymptotics
-
-- Asymptotic distribution of $K_n$: $$\frac{K_n-\mathbb{E}K_n}{\sqrt{\text{Var}(K_n)}} \Rightarrow \mathcal{N}(0,1)$$
-
-<center>![Theorem 10.6](figure/Them10.6.png)
-
----
-## MCMC & Gibbs Sampler
-
-1. **Markov chain Monte Carlo simulation(MCMC):** is a general method based on drawing values of $\theta$ from approximate distributions and then correcting those draws to better approximate the target posterior distribution, $p(\theta|y)$. 
-
-2. **Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(\theta = (\theta_1, \cdots , \theta_d))$.
-
----
-## DPMM & Gibbs Sampler Algorithm
-
-Simple Mixture Model: $$\begin{array} {l}
-X|\theta_i \sim \mathcal{N}(\theta_i, 1) \\
-\theta_i \sim G \\
-G \sim DP(\alpha, G_0) \\
-G_0 \sim \mathcal{N}(0,2) 
-\end{array}$$
-
----
-## DPMM & Gibbs Sampler Algorithm
-
-The conditional distribution for Gibbs sampling is as following: 
-
-$$\begin{array}
-{rl}
-\theta^t_{i}|\theta^t_{-i,y_i} \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
-q_{i,j} =                           & b F(y_i, \theta_j) \\
-r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
-\end{array}$$
-
-Then: 
-- Likelihood function: $F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}$
-
-- $\int{F(y_i, \theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
-
-- Posterior distribution $H_i = p(\theta|y_i)= \frac{P(\theta)P(y_i|\theta)}{P(y_i)}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{1}{2 * (2/3)}(\theta - \frac{2}{3}y_i)^2}$
-
----
-## DPMM & Gibbs Sampler Algorithm
-
-$$\begin{array}
-{ll}
-\hline
-\textbf{Algorithm:} & \text{Gibbs Sampler for DPMM}  \\
-\hline
-1.\mathbf{Input:}   & \mathbf{y} \in \mathbb{R}^n,\;  \\
-    & \theta_i \in (0,1), i=1,\cdots, n \\
-2. \mathbf{Repeat:} & (1) \;  q^*_{i,j} =  F(y_i, \theta_i) \\
-                    & (2) \;  r^*_{i} = \int F(y_i, \theta_i) d G_0(\theta) \\
-                    & (3) \;  b_{i} = 1/(\sum^n_{j=1} q^*_{i,j} + r^*_{i} ) \\
-                    & (4) \;  \text{Draw} \; \theta^t_{i}|\theta^t_{-i,y_i} \sim \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
-                    & (5) \;  \text{Update} \; i=1, \cdots, n \\
-3. \mathbf{Deliver:} & \hat\theta = \theta^{(t)} \\
-\hline
-\end{array}$$
-
-
-
----
-## Convergency of Algorithms 
-
-Figure below shows the convergency of total number of clusters $(K_n)$ by changing iteration times $(M)$ of Gibbs Sampler(Algorithm 1). 
-
-$(N=100, M\in (2,7,20,54,148,403), Rep=100)$
-
-- Algorithm 1 converge very quick. 
-- When $M>50$, total number of cluster from Gibbs Sampler is acceptable. 
-
-<img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
-
----
-## Convergency of Algorithms 
-
-Histogram for every given M:
-
-- Total number of cluster approach the truth ($n^0_c=10$)
-
-<!-- <center>![Convergency of Algorithm](figure/Covg_M.png) -->
-<center><img width=600px height=600px src="figure/Covg_M.png"></img></center>
-
 ---
 ## Stick-Breaking construction
-
-Stick-breaking construction of Poisson-Dirichlet random partition $(0,θ)$.
 
 Let $(V_n)_{n\in N}$ be i.i.d. $\text{Beta}(1,\theta)$ random variables.
 
 That is, $P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.$
 
-Consider
+Consider:
+
 $$\begin{array}
   {rl}
   P_1 & := \;  V_1 \\
@@ -181,8 +84,152 @@ $$\begin{array}
 <center><img width=800px height=700px src="figure/SB.png"></img></center>
 
 ---
+## Chinese Restaurant Process (CRP)
+
+- Imagine a Chinese restaurant that has unlimited number of tables.
+- First customer sits at the first table.
+- Customer $n$ sits at: 
+  - Table $k$ with probability $n_k/(\alpha_0+n−1)$, where $n_k$ is the number of customers
+at table $k$.
+  - A new table $k + 1$ with probability $\alpha_0/(\alpha_0+n−1)$
+
+In this metaphor, customers are analogies of integers and tables of clusters. This process can also be summarized as follows:
+$$p(c_n=k|c_{1:(n-1)}) = \{ \begin{array}
+  {l}
+  \frac{n_k}{\alpha_0+n−1 },  \; \text{if occupied table;} \\
+  \frac{\alpha_0}{\alpha_0+n−1}, \; \text{if new table} 
+  \end{array} $$
+
+---
 ## Animation of Chinese Restaurant Process (CRP)
 
 <!-- <center>![CRP](figure/example_1.gif)</center> -->
 <center><img width=500px height=500px src="figure/example_1.gif"></img></center>
+
+
+---
+## Simulation of Asymptotics
+
+Asymptotics of $K_n$: Number of clusters
+
+- **Theorem:** $\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta$ almost surely.
+
+<img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
+
+---
+## Simulation of Asymptotics
+
+- **Theorem:** Asymptotic distribution of $K_n$: $$\frac{K_n-\mathbb{E}K_n}{\sqrt{\text{Var}(K_n)}} \Rightarrow \mathcal{N}(0,1)$$
+
+<center>![Theorem 10.6](figure/Them10.6.png)
+
+---
+## MCMC & Gibbs Sampler
+
+1. **Markov chain Monte Carlo simulation(MCMC):** is a general method based on drawing values of $\theta$ from approximate distributions and then correcting those draws to better approximate the target posterior distribution, $p(\theta|y)$. 
+
+2. **Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(\theta = (\theta_1, \cdots , \theta_d))$.
+
+---
+## Conjugate Prior is importants
+
+If the posterior distributions $p(\theta|x)$ are in the **same family as the prior probability distribution** $p(\theta)$ , the prior and posterior are then called conjugate distributions, and the prior is called **a conjugate prior** for the likelihood function.
+
+**Model parameter** $\mu$: mean of Normal with known variance $\sigma^2$. 
+
+Prior of $\mu$ is $\mathcal{N}(\mu_0, \sigma^2_0)$
+
+By derivation, posterior distribution is :
+
+$$\mathcal{N}\Bigg(\Bigg(\frac{1}{\sigma _{0}^{2}}+\frac{n}{\sigma ^{2}} \Bigg)^{-1} \Bigg(\frac{\mu _{0}}{\sigma _{0}^{2}}+\frac{\sum _{i=1}^{n}x_{i}}{\sigma^{2}}\Bigg),\Bigg(\frac {1}{\sigma _{0}^{2}}+\frac{n}{\sigma ^{2}}\Bigg)^{-1}\Bigg)$$
+
+---
+## DPMM & Gibbs Sampler Algorithm
+
+Simple Mixture Model: $$\begin{array} {l}
+y|\theta_i \sim \mathcal{N}(\theta_i, 1) \\
+\theta_i \sim G \\
+G \sim DP(\alpha, G_0) \\
+G_0 \sim \mathcal{N}(0,2) 
+\end{array}$$
+
+- Likelihood function: $F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}$
+
+- Posterior distribution $H_i = p(\theta|y_i)= \frac{F(y_i|\theta)G_0(\theta)}{\int{F(y_i|\theta)G_0(\theta)}}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{(\theta - \frac{2}{3}y_i)^2}{2 * (2/3)}}$
+
+---
+## DPMM & Gibbs Sampler Algorithm
+
+The conditional distribution for Gibbs sampling is as following: 
+
+$$\begin{array}
+{rl}
+\theta^t_{i}|\theta^t_{-i},y_i \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
+q_{i,j} =                           & b F(y_i, \theta_j) \\
+r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
+\end{array}$$
+
+- $\int{F(y_i|\theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
+
+- or another simple way: $\Big(= \frac{F(y_i|\theta)G_0(\theta)}{H_i(\theta|y_i)}\Big)$
+
+---
+## DPMM & Gibbs Sampler Algorithm
+
+$$\begin{array}
+{ll}
+\hline
+\textbf{Algorithm:} & \text{Gibbs Sampler for DPMM}  \\
+\hline
+1.\mathbf{Input:}   & \mathbf{y} \in \mathbb{R}^n,\;  \\
+    & \theta_i \in (0,1), i=1,\cdots, n \\
+2. \mathbf{Repeat:} & (1) \;  q^*_{i,j} =  F(y_i, \theta_i) \\
+                    & (2) \;  r^*_{i} = \alpha \int F(y_i, \theta_i) d G_0(\theta) \\
+                    & (3) \;  b_{i} = 1/(\sum^n_{j=1} q^*_{i,j} + r^*_{i} ) \\
+                    & (4) \;  \text{Draw} \; \theta^t_{i}|\theta^t_{-i,y_i} \sim \sum_{j\ne i} b_i q^*_{i,j} \delta(\theta^t_j) + b_i r^*_i H_i \\
+                    & (5) \;  \text{Update} \; i=1, \cdots, n \\
+3. \mathbf{Deliver:} & \hat\theta = \theta^{(t)} \\
+\hline
+\end{array}$$
+
+
+
+---
+## Convergency of Algorithms 
+
+Average total number of clusters $(K_n)$ v.s iteration times $(M)$ of Gibbs Sampler (Algorithm 1). 
+
+$(N=100, M\in (2,7,20,54,148,403), \text{Rep}=100)$
+
+<img src="assets/fig/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
+
+- Algorithm 1 converge very quick. 
+- When $M>50$, total number of cluster from Gibbs Sampler is acceptable. 
+
+
+---
+## Convergency of Algorithms 
+
+Histogram of 100 replications for every given M:
+
+<!-- <center>![Convergency of Algorithm](figure/Covg_M.png) -->
+<center><img width=600px height=600px src="figure/Covg_M.png"></img></center>
+
+- Total number of clusters approach the truth when M increases ($n^0_c=10$)
+
+---
+## Inference of cluster center
+
+Centers of clusters might be of interest to you. 
+
+<center><img width=400px height=400px src="figure/2BestGibbs.png" align="left"></img>
+<img width=400px height=400px src="figure/BestGibbs.png" align="right"></img>
+</center>
+
+---
+## Inference of cluster center
+
+Animation of Centers of each cluster (100 simulation): 
+
+<center><img width=400px height=400px src="figure/AnimatedGibbsCenter.gif"></img></center>
 
