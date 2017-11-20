@@ -80,8 +80,8 @@ $$\begin{array}
 ---
 ## Stick-Breaking construction
 
-<!-- <center>![SB](figure/SB.png)</center> -->
-<center><img width=700px height=700px src="figure/SB.png"></img></center>
+<center>![SB](figure/SB.png)</center>
+<!-- <center><img width=700px height=700px src="figure/SB.png"></img></center> -->
 
 ---
 ## Chinese Restaurant Process (CRP)
