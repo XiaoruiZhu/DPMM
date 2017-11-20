@@ -101,7 +101,7 @@ $$p(c_n=k|c_{1:(n-1)}) = \{ \begin{array}
   \end{array} $$
 
 ---
-## Animation of Chinese Restaurant Process (CRP)
+## Animation of CRP
 
 <!-- <center>![CRP](figure/example_1.gif)</center> -->
 <center><img width=500px height=500px src="figure/example_1.gif"></img></center>
@@ -114,7 +114,7 @@ Asymptotics of $K_n$: Number of clusters
 
 - **Theorem:** $\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta$ almost surely.
 
-<img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
 
 ---
 ## Simulation of Asymptotics
@@ -165,8 +165,9 @@ The conditional distribution for Gibbs sampling is as following:
 $$\begin{array}
 {rl}
 \theta^t_{i}|\theta^t_{-i},y_i \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
-q_{i,j} =                           & b F(y_i, \theta_j) \\
-r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
+q_{i,j} =                           & b_i F(y_i, \theta_j) \\
+r_i =                               & b_i \alpha \int F(y_i, \theta)G_0(\theta) \\
+\text{where } b_i \text{ satisfied}                                & \sum_{j\ne i}q_{i,j} + r_i = 1
 \end{array}$$
 
 - $\int{F(y_i|\theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
@@ -201,7 +202,7 @@ Average total number of clusters $(K_n)$ v.s iteration times $(M)$ of Gibbs Samp
 
 $(N=100, M\in (2,7,20,54,148,403), \text{Rep}=100)$
 
-<img src="assets/fig/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
 
 - Algorithm 1 converge very quick. 
 - When $M>50$, total number of cluster from Gibbs Sampler is acceptable. 

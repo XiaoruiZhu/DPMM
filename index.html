@@ -193,7 +193,7 @@ at table \(k\).</li>
 
 <slide class="" id="slide-7" style="background:;">
   <hgroup>
-    <h2>Animation of Chinese Restaurant Process (CRP)</h2>
+    <h2>Animation of CRP</h2>
   </hgroup>
   <article data-timings="">
     <!-- <center>![CRP](figure/example_1.gif)</center> -->
@@ -215,7 +215,7 @@ at table \(k\).</li>
 <li><strong>Theorem:</strong> \(\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta\) almost surely.</li>
 </ul>
 
-<p><img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
+<p><img src="figure/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
 
   </article>
   <!-- Presenter Notes -->
@@ -300,8 +300,9 @@ G_0 \sim \mathcal{N}(0,2)
 <p>\[\begin{array}
 {rl}
 \theta^t_{i}|\theta^t_{-i},y_i \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
-q_{i,j} =                           & b F(y_i, \theta_j) \\
-r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
+q_{i,j} =                           & b_i F(y_i, \theta_j) \\
+r_i =                               & b_i \alpha \int F(y_i, \theta)G_0(\theta) \\
+\text{where } b_i \text{ satisfied}                                & \sum_{j\ne i}q_{i,j} + r_i = 1
 \end{array}\]</p>
 
 <ul>
@@ -347,7 +348,7 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
 
 <p>\((N=100, M\in (2,7,20,54,148,403), \text{Rep}=100)\)</p>
 
-<p><img src="assets/fig/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" /></p>
+<p><img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" /></p>
 
 <ul>
 <li>Algorithm 1 converge very quick. </li>
@@ -447,7 +448,7 @@ r_i =                               & b \alpha \int F(y_i, \theta)G_0(\theta) \\
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=7 title='Animation of Chinese Restaurant Process (CRP)'>
+        data-slide=7 title='Animation of CRP'>
          7
       </a>
     </li>
