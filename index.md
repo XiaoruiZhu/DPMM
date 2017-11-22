@@ -159,20 +159,6 @@ $$\begin{array}
 \hline
 \end{array}$$
 
----
-## DPMM & Gibbs Sampler Algorithm
-
-2D Simple Mixture Model: $$\begin{array} {rl}
-\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg)|\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg) & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg), \bigg(\begin{array}{cc}\sigma^2 & \\ & \sigma^2\\ \end{array}\bigg)\bigg) \\
-\bigg(\begin{array}{c}\theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg) & \sim DP(\alpha, G_0) \\
-G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bigg(\begin{array}{cc}\sigma^2_0 & \\ & \sigma^2_0\\ \end{array}\bigg)\bigg)
-\end{array}$$
-
-- Likelihood function: $F\bigg(\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg)|\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg)\bigg) = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}(\mathbf{y_{i\cdot}} - \theta_{i\cdot})^2}$
-
-- Posterior distribution $H_i \sim \mathcal{N}\bigg(\frac{\sigma^2_0}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg), \frac{\sigma^2_0\sigma^2}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{cc}1 & \\ & 1\\ \end{array}\bigg)\bigg)$ by formula in Wikipedia
-
-
 
 ---
 ## Convergency of one Markov chains
@@ -234,10 +220,46 @@ Animation of Centers of each cluster (100 simulation):
 
 <center><img width=400px height=400px src="figure/AnimatedGibbsCenter.gif"></img></center>
 
+
+---
+## DPMM & Gibbs Sampler Algorithm
+
+2D Simple Mixture Model: $$\begin{array} {rl}
+\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg)|\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg) & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg), \bigg(\begin{array}{cc}\sigma^2 & \\ & \sigma^2\\ \end{array}\bigg)\bigg) \\
+\bigg(\begin{array}{c}\theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg) & \sim DP(\alpha, G_0) \\
+G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bigg(\begin{array}{cc}\sigma^2_0 & \\ & \sigma^2_0\\ \end{array}\bigg)\bigg)
+\end{array}$$
+
+- Likelihood function: $F\bigg(\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg)|\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg)\bigg) = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}(\mathbf{y_{i\cdot}} - \theta_{i\cdot})^2}$
+
+- Posterior distribution $H_i \sim \mathcal{N}\bigg(\frac{\sigma^2_0}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg), \frac{\sigma^2_0\sigma^2}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{cc}1 & \\ & 1\\ \end{array}\bigg)\bigg)$ by formula in Wikipedia
+
+
+--- 
+## Gibbs Sampler results
+
+Underlying clusters and estimated clusters from Gibbs Sample 
+<br> <br>
+
+<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
+</center>
+
+--- 
+## Gibbs Sampler results
+
+Underlying clusters and estimated clusters from Gibbs Sample 
+<br> <br>
+
+<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=450px height=450px src="figure/2D_Cluster_Est.png" align="right"></img>
+</center>
+
 ---
 ## Take Aways 
 
-- Algorithm converge very quick
-- Start from all same 
-- When $M>50$, total number of cluster from Gibbs Sampler is acceptable
+<br> <br> 
+
+- In 1D base measure setting, Algorithm converge very quick
+- Starting from all same initialization performs better 
+- In 1D base measure, when $M>50$, total number of cluster from Gibbs Sampler is acceptable, but it's not ture in 2D base measure 
 

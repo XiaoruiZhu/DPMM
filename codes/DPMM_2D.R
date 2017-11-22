@@ -172,6 +172,9 @@ Test1 <- Covg_M_2D(Ser_M = Sim_M[1:11],y = y, alpha = 0.4,
 ALLD <- list(Data=DPMM_Data, Results=Test1)
 save(ALLD, file = "data/ALL_D.Rdata")
 
+load(file = "data/ALL_D.Rdata")
+Test1 <- ALLD$Results
+DPMM_Data <- ALLD$Data
 Test1$NTables
 dim(unique(Test1$End_Tables))[1]
 unique(Test1$All_theta[,,6]); unique(Test1$All_theta[,,7]); 
@@ -180,29 +183,31 @@ unique(Test1$All_theta[,,10]);unique(Test1$All_theta[,,11])
 unique(Test1$End_Tables)
 unique(DPMM_Data[, c("Center1", "Center2")])
 
-
-p3 <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4], color=clusters[,2])) + 
+library(ggplot2)
+clusters <- as.data.frame(DPMM_Data, row.names = T)
+clusters[,2] <- as.factor(clusters[,2])
+centers <- as.data.frame(DPMM_Data[,5:6], row.names = T)
+colnames(centers) <- c("dim1","dim2")
+p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID)) + 
   geom_point()
 p3 + geom_point(data=centers, aes(x=dim1,y=dim2),
-                inherit.aes = FALSE)
+                inherit.aes = FALSE) + 
+  ggtitle("True data with clusters") +
+  labs(x = "X1") + labs(y = "X2")
+  
 
-
-Pred_center1 <- as.data.frame(Test1$All_theta[,,11], row.names = T)
-colnames(Pred_center1) <- c("dim1","dim2")
-p3 <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4], color=clusters[,2])) + 
-  geom_point()
-
-p3 + geom_point(data=Pred_center1, aes(x=dim1, y=dim2)) 
-
-p3 + geom_point(data=Pred_center1, aes(x=dim1,y=dim2),
-                inherit.aes = FALSE)
-
-Pred_center2 <- as.data.frame(Test1$All_theta[,,6], row.names = T)
+Pred_center2 <- as.data.frame(Test1$All_theta[,,11], row.names = T)
 colnames(Pred_center2) <- c("dim1","dim2")
-p3 <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4], color=as.factor(Pred_center2[,1]))) + 
-  geom_point()
+Table_ID_Est <- as.factor(Pred_center2[,1])
+# Rename all levels
+levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
+p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
+  geom_point() 
 p3 + geom_point(data=Pred_center2, aes(x=dim1,y=dim2),
-                inherit.aes = FALSE)
+                inherit.aes = FALSE) + 
+  ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[11])) +
+  labs(x = "X1") + labs(y = "X2")
+
 
 Pred_center3 <- as.data.frame(Test1$All_theta[,,7], row.names = T)
 colnames(Pred_center3) <- c("dim1","dim2")
