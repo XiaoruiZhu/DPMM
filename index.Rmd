@@ -1,8 +1,8 @@
 ---
 title       : Dirichlet Process Mixture Models
 subtitle    : Models and Inferences
-author      : Xiaorui Zhu
-job         : Business Analytics
+author      : Xiaorui Zhu (Joint work with Brittany Green)
+job         : Ph.D. students in Business Analytics
 date        : 11/12/2017
 framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
 highlighter : highlight.js  # {highlight.js, prettify, highlight}
@@ -56,7 +56,7 @@ Truth is complicated:
 --- 
 ## Dirichlet Process Mixture Model
 
-$DP$ is a random measure defined as: $$\mu = \sum^{\infty}_{n=1} p_n \delta_{\phi_n}, $$ where:
+$DP$ is a random measure defined as: $$\mu = \sum^{\infty}_{i=1} p_i \delta_{\phi_i}, $$ where:
 
 - $(p_n)_{n\in N}$ are random weights by stick-breaking construction with parameter $\theta$
 - and $G_0$ is "the base measure"
@@ -82,13 +82,71 @@ $$\begin{array}
 **Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(\theta = (\theta_1, \cdots , \theta_d))$.
 
 1. Starts from an arbitrary state $\mathbf{X}^{(0)}=\mathbf{x}^{(0)}$
-2. Moves with transition probability density: $$\mathbf{K}_G(\bf{x, y})=\prod^m_{\ell=1}\pi(y_\ell|\mathbf{y}_{1 : \ell -1}, \mathbf{x}_{\ell+1 : m})$$
-3. Sample next state $\mathbf{X}^{(n)}$ from $K_G(\mathbf{X}^{(n-1)}, \mathbf{y})$
+2. Moves with transition probability density: $$\mathbf{K}_G(\bf{x, y})=\prod^d_{\ell=1}\pi(y_\ell|\mathbf{y}_{1 : \ell -1}, \mathbf{x}_{\ell+1 : d})$$
+3. Sample next state $\mathbf{X}^{(m)}$ from $K_G(\mathbf{X}^{(m-1)}, \mathbf{y})$
   
-4. Sub-steps($\ell$-th): Sample $\mathbf{X}^{(n)}_\ell$ from $$\pi(x|\mathbf{X}^{(n)}_{1 : \ell -1}, \mathbf{X}^{(n-1)}_{\ell+1 : m})$$ 
+4. Sub-steps($\ell$-th): Sample $\mathbf{X}^{(m)}_\ell$ from $$\pi(x|\mathbf{X}^{(m)}_{1 : \ell -1}, \mathbf{X}^{(m-1)}_{\ell+1 : d})$$ 
+
+<style>
+div.footnotes {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+  width: 80%;
+  font-size: 0.6em;
+}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('slide:not(.backdrop):not(.title-slide)').append('<div class=\"footnotes\">');
+
+    $('footnote').each(function(index) {
+      var text  = $(this).html();
+      var fnNum = (index+1).toString().sup();
+      $(this).html(text + fnNum);
+
+      var footnote   = fnNum + ': ' + $(this).attr('content') + '<br/>';
+      var oldContent = $(this).parents('slide').children('div.footnotes').html();
+      var newContent = oldContent + footnote;
+      $(this).parents('slide').children('div.footnotes').html(newContent);
+    });
+  });
+</script>
 
 ---
 ## DPMM & Gibbs Sampler Algorithm
+
+<style>
+div.footnotes {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+  width: 80%;
+  font-size: 0.6em;
+}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('slide:not(.backdrop):not(.title-slide)').append('<div class=\"footnotes\">');
+
+    $('footnote').each(function(index) {
+      var text  = $(this).html();
+      var fnNum = (index+1).toString().sup();
+      $(this).html(text + fnNum);
+
+      var footnote   = fnNum + ': ' + $(this).attr('content') + '<br/>';
+      var oldContent = $(this).parents('slide').children('div.footnotes').html();
+      var newContent = oldContent + footnote;
+      $(this).parents('slide').children('div.footnotes').html(newContent);
+    });
+  });
+</script>
 
 Simple Mixture Model: $$\begin{array} {l}
 \mathbf{y}_i|\mathbf{\theta}_{i} \sim \mathcal{N}(\mathbf{\theta}_i, 1) \\
@@ -96,12 +154,14 @@ Simple Mixture Model: $$\begin{array} {l}
 G_0 \sim \mathcal{N}(0,2) 
 \end{array}$$
 
-In order to implement, explicit expression is needed: $$\theta^t_{i}|\theta^t_{-i},y_i \sim \sum_{j\ne i} b_i F(y_i, \theta_j) \delta(\theta^t_j) + b_i \alpha \bigg[\int F(y_i, \theta)G_0(\theta)\bigg] H_i$$
+In order to implement, explicit expression is <footnote content="Neal, R. M. (2000)."> needed </footnote>: $$\theta^t_{i}|\theta^t_{-i},y_i \sim \sum_{j\ne i} b_i F(y_i, \theta^t_j) \delta(\theta^t_j) + b_i \alpha \bigg[\int F(y_i, \theta)G_0(\theta)\bigg] H_i$$ 
 
-$$b_i=1/\{\sum_{j\ne i}F(y_i, \theta_j) + \alpha \int F(y_i, \theta)G_0(\theta)\}$$
+$$b_i=\frac{1}{\sum_{j\ne i}F(y_i, \theta_j) + \alpha \int F(y_i, \theta)G_0(\theta)}$$
 
 ---
 ## DPMM & Gibbs Sampler Algorithm
+
+<br> 
 
 - Likelihood function: $F(y_i|\theta_i) = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}(y_i - \theta_i)^2}$
 
@@ -112,9 +172,9 @@ $$b_i=1/\{\sum_{j\ne i}F(y_i, \theta_j) + \alpha \int F(y_i, \theta)G_0(\theta)\
 - or another simple way: $\Big(= \frac{F(y_i|\theta)G_0(\theta)}{H_i(\theta|y_i)}\Big)$
 
 ---
-## Conjugate Prior is importants
+## Conjugate Prior is important
 
-If the posterior distributions $p(\theta|x)$ are in the **same family as the prior probability distribution** $p(\theta)$ , the prior and posterior are then called conjugate distributions, and the prior is called **a conjugate prior** for the likelihood function.
+If the posterior distributions $p(\theta|y)$ are in the **same family as the prior probability distribution** $p(\theta)$ , the prior and posterior are then called conjugate distributions, and the prior is called **a conjugate prior** for the likelihood function.
 
 **Model parameter** $\mathbf{\mu}$: mean of Normal with known variance $\Sigma$. 
 
@@ -150,12 +210,12 @@ $$\begin{array}
 1.\mathbf{Input:}   & \mathbf{y} \in \mathbb{R}^n,\;  \\
     & \theta^{(0)}_i \in (0,1), i=1,\cdots, n \\
     & \text{or} \;\theta^{(0)}_i = 0, i=1,\cdots, n \\
-2. \mathbf{Repeat:} & (1) \;  q^*_{i,j} =  F(y_i, \theta^{(t-1)}_i) \\
-                    & (2) \;  r^*_{i} = \alpha \int F(y_i, \theta^{(t-1)}_i) d G_0(\theta^{(t-1)}_i) \\
+2. \mathbf{Repeat:} & (1) \;  q^*_{i,j} =  F(y_i, \theta^{(m)}_i) \\
+                    & (2) \;  r^*_{i} = \alpha \int F(y_i, \theta^{(m)}_i) d G_0(\theta^{(m)}_i) \\
                     & (3) \;  b_{i} = 1/(\sum^n_{j=1} q^*_{i,j} + r^*_{i} ) \\
-                    & (4) \;  \text{Draw} \; \theta^{(t)}_{i}|\theta^{(t-1)}_{-i,y_i} \sim \sum_{j\ne i} b_i q^*_{i,j} \delta(\theta^{(t-1)}_j) + b_i r^*_i H_i \\
+                    & (4) \;  \text{Draw} \; \theta^{(m)}_{i}|\theta^{(m)}_{-i,y_i} \sim \sum_{j\ne i} b_i q^*_{i,j} \delta(\theta^{(m)}_j) + b_i r^*_i H_i \\
                     & (5) \;  \text{Update} \; i=1, \cdots, n \\
-3. \mathbf{Deliver:} & \hat\theta = \theta^{(t)} \\
+3. \mathbf{Deliver:} & \hat\theta = \theta^{(m)} \\
 \hline
 \end{array}$$
 
@@ -189,7 +249,7 @@ Start from a state with all *different* values:
 
 Average total number of clusters $(K_n)$ v.s iteration times $(M)$ of Gibbs Sampler
 
-$(N=1000, M\in (1,2,7,20,54,148,403))$
+$(n=1000, M\in (1,2,7,20,54,148,403))$
 
 ```{r echo = F, results = 'asis', fig.width=8, fig.height=6, fig.align='center'}
 load(file = "data/Fig_D.Rdata")
