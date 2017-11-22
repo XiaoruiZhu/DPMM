@@ -16,37 +16,50 @@ fig_caption : true
 ---
 
 ---
-## Contents
+## Storyline
 
-1. Stick-Breaking and Chinese Restaurant Process
+1. Motivation
 2. Dirichlet Process Mixture Models
-3. Conjugate Prior
-3. Gibbs Sampling Algorithms
+3. Gibbs Sampling Algorithm
 4. Simulation results
 
-<!-- --- &radio -->
+--- 
+## Motivation
 
-<!-- ## Who has higher creativity? -->
-
-<!-- Who has higher creativity? -->
-
-<!-- 1. Man -->
-<!-- 2. Woman -->
-<!-- 3. Engineer -->
-<!-- 4. Artist -->
-
-<!-- *** .hint -->
-<!-- Creativity Diversity -->
-
-<!-- *** .explanation -->
+Truth is complicated:
+<center><img width=400px height=400px src="figure/OB_HIST.png" align="left"></img>
+</center>
 
 --- 
-## Dirichlet Process
+## Motivation
+
+Truth is complicated:
+<center><img width=400px height=400px src="figure/OB_HIST.png" align="left"></img>
+<img width=400px height=400px src="figure/DPMM_HIST.png" align="right"></img>
+</center>
+
+--- 
+## Motivation
+
+Truth is complicated:
+<center><img width=400px height=400px src="figure/OB_HIST_2D.png" align="left"></img>
+</center>
+
+--- 
+## Motivation
+
+Truth is complicated:
+<center><img width=400px height=400px src="figure/OB_HIST_2D.png" align="left"></img>
+<img width=400px height=400px src="figure/DPMM_HIST_2D.png" align="right"></img>
+</center>
+
+--- 
+## Dirichlet Process Mixture Model
 
 $DP$ is a random measure defined as: $$\mu = \sum^{\infty}_{n=1} p_n \delta_{\phi_n}, $$ where:
 
 - $(p_n)_{n\in N}$ are random weights by stick-breaking construction with parameter $\theta$
-- and $(\phi_n)_{n\in N} \overset{iid}{\sim} G_0$ is "the base measure". 
+- and $G_0$ is "the base measure"
 
 Therefore, $\mu \sim DP(\theta, G_0)$ has following repressentation: 
 
@@ -57,122 +70,74 @@ $$\begin{array}
   \phi_i & \overset{iid}{\sim} \; G_0
   \end{array}$$
 
-
----
-## Stick-Breaking construction
-
-Let $(V_n)_{n\in N}$ be i.i.d. $\text{Beta}(1,\theta)$ random variables.
-
-That is, $P(V_1\in dx) = \theta (1 − x)^{\theta−1} \textbf{1}_{{x\in (0,1)} }dx.$
-
-Consider:
-
-$$\begin{array}
-  {rl}
-  P_1 & := \;  V_1 \\
-  P_2 & := (1-V_1)V_2 \\
-  P_3 & := (1-V_1)(1-V_2)V_3 \\
-      & \vdots \\
-  P_{n+1} & := \displaystyle V_n \prod^{n-1}_{j=1}(1-V_j)
-  \end{array}$$
-
-
----
-## Stick-Breaking construction
-
-<!-- <center>![SB](figure/SB.GIF)</center> -->
-<center><img width=800px height=700px src="figure/SB.GIF"></img></center>
-
----
-## Chinese Restaurant Process (CRP)
-
-- Imagine a Chinese restaurant that has unlimited number of tables.
-- First customer sits at the first table.
-- Customer $n$ sits at: 
-  - Table $k$ with probability $n_k/(\alpha_0+n−1)$, where $n_k$ is the number of customers
-at table $k$.
-  - A new table $k + 1$ with probability $\alpha_0/(\alpha_0+n−1)$
-
-In this metaphor, customers are analogies of integers and tables of clusters. This process can also be summarized as follows:
-$$p(c_n=k|c_{1:(n-1)}) = \{ \begin{array}
-  {l}
-  \frac{n_k}{\alpha_0+n−1 },  \; \text{if occupied table;} \\
-  \frac{\alpha_0}{\alpha_0+n−1}, \; \text{if new table} 
-  \end{array} $$
-
 ---
 ## Animation of CRP
-
 <!-- <center>![CRP](figure/example_1.gif)</center> -->
 <center><img width=500px height=500px src="figure/example_1.gif"></img></center>
 
 
 ---
-## Simulation of Asymptotics
-
-Asymptotics of $K_n$: Number of clusters
-
-- **Theorem:** $\displaystyle \text{lim}_{n\rightarrow\infty}K_n/\text{log}n = \theta$ almost surely.
-
-<img src="figure/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
-
----
-## Simulation of Asymptotics
-
-- **Theorem:** Asymptotic distribution of $K_n$: $$\frac{K_n-\mathbb{E}K_n}{\sqrt{\text{Var}(K_n)}} \Rightarrow \mathcal{N}(0,1)$$
-
-<center>![Theorem 10.6](figure/Them10.6.png)
-
----
 ## MCMC & Gibbs Sampler
 
-1. **Markov chain Monte Carlo simulation(MCMC):** is a general method based on drawing values of $\theta$ from approximate distributions and then correcting those draws to better approximate the target posterior distribution, $p(\theta|y)$. 
+**Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(\theta = (\theta_1, \cdots , \theta_d))$.
 
-2. **Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(\theta = (\theta_1, \cdots , \theta_d))$.
+1. Starts from an arbitrary state $\mathbf{X}^{(0)}=\mathbf{x}^{(0)}$
+2. Moves with transition probability density: $$\mathbf{K}_G(\bf{x, y})=\prod^m_{\ell=1}\pi(y_\ell|\mathbf{y}_{1 : \ell -1}, \mathbf{x}_{\ell+1 : m})$$
+3. Sample next state $\mathbf{X}^{(n)}$ from $K_G(\mathbf{X}^{(n-1)}, \mathbf{y})$
+  
+4. Sub-steps($\ell$-th): Sample $\mathbf{X}^{(n)}_\ell$ from $$\pi(x|\mathbf{X}^{(n)}_{1 : \ell -1}, \mathbf{X}^{(n-1)}_{\ell+1 : m})$$ 
+
+---
+## DPMM & Gibbs Sampler Algorithm
+
+Simple Mixture Model: $$\begin{array} {l}
+\mathbf{y}_i|\mathbf{\theta}_{i} \sim \mathcal{N}(\mathbf{\theta}_i, 1) \\
+\theta_i \sim DP(\alpha, G_0) \\
+G_0 \sim \mathcal{N}(0,2) 
+\end{array}$$
+
+In order to implement, explicit expression is needed: $$\theta^t_{i}|\theta^t_{-i},y_i \sim \sum_{j\ne i} b_i F(y_i, \theta_j) \delta(\theta^t_j) + b_i \alpha \bigg[\int F(y_i, \theta)G_0(\theta)\bigg] H_i$$
+
+$$b_i=1/\{\sum_{j\ne i}F(y_i, \theta_j) + \alpha \int F(y_i, \theta)G_0(\theta)\}$$
+
+---
+## DPMM & Gibbs Sampler Algorithm
+
+- Likelihood function: $F(y_i|\theta_i) = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}(y_i - \theta_i)^2}$
+
+- Posterior distribution $H_i = p(\theta|y_i)= \frac{F(y_i|\theta)G_0(\theta)}{\int{F(y_i|\theta)G_0(\theta)}}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{(\theta - \frac{2}{3}y_i)^2}{2  (2/3)}}$
+
+- $\int{F(y_i|\theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
+
+- or another simple way: $\Big(= \frac{F(y_i|\theta)G_0(\theta)}{H_i(\theta|y_i)}\Big)$
 
 ---
 ## Conjugate Prior is importants
 
 If the posterior distributions $p(\theta|x)$ are in the **same family as the prior probability distribution** $p(\theta)$ , the prior and posterior are then called conjugate distributions, and the prior is called **a conjugate prior** for the likelihood function.
 
-**Model parameter** $\mu$: mean of Normal with known variance $\sigma^2$. 
+**Model parameter** $\mathbf{\mu}$: mean of Normal with known variance $\Sigma$. 
 
-Prior of $\mu$ is $\mathcal{N}(\mu_0, \sigma^2_0)$
+Prior of $\mathbf{\mu}$ is $\mathcal{N}(\mathbf{\mu_0}, \Sigma_0)$
 
 By derivation, posterior distribution is :
 
-$$\mathcal{N}\Bigg(\Bigg(\frac{1}{\sigma _{0}^{2}}+\frac{n}{\sigma ^{2}} \Bigg)^{-1} \Bigg(\frac{\mu _{0}}{\sigma _{0}^{2}}+\frac{\sum _{i=1}^{n}x_{i}}{\sigma^{2}}\Bigg),\Bigg(\frac {1}{\sigma _{0}^{2}}+\frac{n}{\sigma ^{2}}\Bigg)^{-1}\Bigg)$$
+$$\mathcal{N}\Bigg(\Bigg(\Sigma^{-1}_0+\Sigma^{-1} \Bigg)^{-1} \Bigg(\Sigma^{-1}_0\mathbf{\mu_0}+\Sigma^{-1}\mathbf{y}\Bigg),\Bigg(\Sigma^{-1}_0+\Sigma^{-1} \Bigg)^{-1}\Bigg)$$
 
----
-## DPMM & Gibbs Sampler Algorithm
 
-Simple Mixture Model: $$\begin{array} {l}
-y|\theta_i \sim \mathcal{N}(\theta_i, 1) \\
-\theta_i \sim G \\
-G \sim DP(\alpha, G_0) \\
-G_0 \sim \mathcal{N}(0,2) 
-\end{array}$$
+<!-- --- -->
+<!-- ## DPMM & Gibbs Sampler Algorithm -->
 
-- Likelihood function: $F(y_i|\theta) = \frac{1}{\sqrt{2\pi}}e^{\frac{1}{2}(y_i - \theta)^2}$
+<!-- The conditional distribution for Gibbs sampling is as following:  -->
 
-- Posterior distribution $H_i = p(\theta|y_i)= \frac{F(y_i|\theta)G_0(\theta)}{\int{F(y_i|\theta)G_0(\theta)}}= \frac{1}{\sqrt{2\pi}\sqrt{2/3}}e^{\frac{(\theta - \frac{2}{3}y_i)^2}{2 * (2/3)}}$
+<!-- $$\begin{array} -->
+<!-- {rl} -->
+<!-- \theta^t_{i}|\theta^t_{-i},y_i \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\ -->
+<!-- q_{i,j} =                           & b_i F(y_i, \theta_j) \\ -->
+<!-- r_i =                               & b_i \alpha \int F(y_i, \theta)G_0(\theta) \\ -->
+<!-- \text{where } b_i \text{ satisfied}                                & \sum_{j\ne i}q_{i,j} + r_i = 1 -->
+<!-- \end{array}$$ -->
 
----
-## DPMM & Gibbs Sampler Algorithm
-
-The conditional distribution for Gibbs sampling is as following: 
-
-$$\begin{array}
-{rl}
-\theta^t_{i}|\theta^t_{-i},y_i \sim & \sum_{j\ne i} q_{i,j} \delta(\theta^t_j) + r_i H_i \\
-q_{i,j} =                           & b_i F(y_i, \theta_j) \\
-r_i =                               & b_i \alpha \int F(y_i, \theta)G_0(\theta) \\
-\text{where } b_i \text{ satisfied}                                & \sum_{j\ne i}q_{i,j} + r_i = 1
-\end{array}$$
-
-- $\int{F(y_i|\theta)G_0(\theta)} = \frac{1}{\sqrt{6\pi}}e^{\frac{1}{6}(y_i)^2}$
-
-- or another simple way: $\Big(= \frac{F(y_i|\theta)G_0(\theta)}{H_i(\theta|y_i)}\Big)$
 
 ---
 ## DPMM & Gibbs Sampler Algorithm
@@ -183,40 +148,75 @@ $$\begin{array}
 \textbf{Algorithm:} & \text{Gibbs Sampler for DPMM}  \\
 \hline
 1.\mathbf{Input:}   & \mathbf{y} \in \mathbb{R}^n,\;  \\
-    & \theta_i \in (0,1), i=1,\cdots, n \\
-2. \mathbf{Repeat:} & (1) \;  q^*_{i,j} =  F(y_i, \theta_i) \\
-                    & (2) \;  r^*_{i} = \alpha \int F(y_i, \theta_i) d G_0(\theta) \\
+    & \theta^{(0)}_i \in (0,1), i=1,\cdots, n \\
+    & \text{or} \;\theta^{(0)}_i = 0, i=1,\cdots, n \\
+2. \mathbf{Repeat:} & (1) \;  q^*_{i,j} =  F(y_i, \theta^{(t-1)}_i) \\
+                    & (2) \;  r^*_{i} = \alpha \int F(y_i, \theta^{(t-1)}_i) d G_0(\theta^{(t-1)}_i) \\
                     & (3) \;  b_{i} = 1/(\sum^n_{j=1} q^*_{i,j} + r^*_{i} ) \\
-                    & (4) \;  \text{Draw} \; \theta^t_{i}|\theta^t_{-i,y_i} \sim \sum_{j\ne i} b_i q^*_{i,j} \delta(\theta^t_j) + b_i r^*_i H_i \\
+                    & (4) \;  \text{Draw} \; \theta^{(t)}_{i}|\theta^{(t-1)}_{-i,y_i} \sim \sum_{j\ne i} b_i q^*_{i,j} \delta(\theta^{(t-1)}_j) + b_i r^*_i H_i \\
                     & (5) \;  \text{Update} \; i=1, \cdots, n \\
 3. \mathbf{Deliver:} & \hat\theta = \theta^{(t)} \\
 \hline
 \end{array}$$
 
+---
+## DPMM & Gibbs Sampler Algorithm
+
+2D Simple Mixture Model: $$\begin{array} {rl}
+\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg)|\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg) & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg), \bigg(\begin{array}{cc}\sigma^2 & \\ & \sigma^2\\ \end{array}\bigg)\bigg) \\
+\bigg(\begin{array}{c}\theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg) & \sim DP(\alpha, G_0) \\
+G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bigg(\begin{array}{cc}\sigma^2_0 & \\ & \sigma^2_0\\ \end{array}\bigg)\bigg)
+\end{array}$$
+
+- Likelihood function: $F\bigg(\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg)|\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg)\bigg) = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}(\mathbf{y_{i\cdot}} - \theta_{i\cdot})^2}$
+
+- Posterior distribution $H_i \sim \mathcal{N}\bigg(\frac{\sigma^2_0}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg), \frac{\sigma^2_0\sigma^2}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{cc}1 & \\ & 1\\ \end{array}\bigg)\bigg)$ by formula in Wikipedia
+
 
 
 ---
-## Convergency of Algorithms 
+## Convergency of one Markov chains
 
-Average total number of clusters $(K_n)$ v.s iteration times $(M)$ of Gibbs Sampler (Algorithm 1). 
+Start from a state with all *same* values:
 
-$(N=100, M\in (2,7,20,54,148,403), \text{Rep}=100)$
+<br><br>
 
-<img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
+<center><img width=300px height=300px src="Example/gibbs01.png" align="left"></img>
+<img width=300px height=300px src="Example/example_1.gif" align="center"></img>
+<img width=300px height=300px src="Example/gibbs17.png" align="right"></img>
+</center>
 
-- Algorithm 1 converge very quick. 
-- When $M>50$, total number of cluster from Gibbs Sampler is acceptable. 
+---
+## Convergency of one Markov chains
+
+Start from a state with all *different* values:
+
+<br><br>
+
+<center><img width=300px height=300px src="Example/gibbs_Diff01.png" align="left"></img>
+<img width=300px height=300px src="Example/example_2.gif" align="center"></img>
+<img width=300px height=300px src="Example/gibbs_Diff17.png" align="right"></img>
+</center>
+
+---
+## Convergency of Algorithm
+
+Average total number of clusters $(K_n)$ v.s iteration times $(M)$ of Gibbs Sampler
+
+$(N=1000, M\in (1,2,7,20,54,148,403))$
+
+<img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
 
 
 ---
-## Convergency of Algorithms 
+## Convergency of Algorithm
 
 Histogram of 100 replications for every given M:
 
 <!-- <center>![Convergency of Algorithm](figure/Covg_M.png) -->
 <center><img width=600px height=600px src="figure/Covg_M.png"></img></center>
 
-- Total number of clusters approach the truth when M increases ($n^0_c=10$)
+- Total number of clusters approach the truth (15) when M increases
 
 ---
 ## Inference of cluster center
@@ -233,4 +233,11 @@ Centers of clusters might be of interest to you.
 Animation of Centers of each cluster (100 simulation): 
 
 <center><img width=400px height=400px src="figure/AnimatedGibbsCenter.gif"></img></center>
+
+---
+## Take Aways 
+
+- Algorithm converge very quick
+- Start from all same 
+- When $M>50$, total number of cluster from Gibbs Sampler is acceptable
 
