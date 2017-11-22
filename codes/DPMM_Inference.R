@@ -15,14 +15,15 @@
 #' @examples
 DPMM_CRP <- function(num_customers, theta) {
   table_ID <- c(1); table_Customers <- c(1)
-  Center_TRUE <- rnorm(1, 0, 2); Center <- c(Center_TRUE)
+  Center_TRUE <-  rnorm(1, 0, 3) # runif(1, -10, 10) ;
+  Center <- c(Center_TRUE)
   next.table <- 2; X <- rnorm(1, Center_TRUE[1], 1)
   for (i in 2:num_customers) {
     if (runif(1,0,1) < (theta) / (i - 1 + theta)) {
       # Add a new ball color/ table
       table_ID <- c(table_ID, next.table)
       table_Customers <- c(table_Customers, 1)
-      Center_TRUE[next.table] <- rnorm(1, 0, 2)
+      Center_TRUE[next.table] <- rnorm(1, 0, 3) # runif(1, -10, 10) 
       X[i] <- rnorm(1, Center_TRUE[next.table], 1)
       Center[i] <- Center_TRUE[next.table]
       next.table <- next.table+1
@@ -55,7 +56,7 @@ table(Test1$Center)
 2*log(200)
 
 plot(
-  table( DPMM_CRP(num_customers = 1000, 100)$Table_ID )
+  table( DPMM_CRP(num_customers = 1000, .3)$Table_ID )
   ,xlab="Table Index", ylab="Frequency", 
   main = "Chinese Restaurant Process"
 )
@@ -110,7 +111,7 @@ PitmanYorPMM_CRP <- function(num_customers, theta, alpha) {
 2*log(200)
 
 plot(
-  table( PitmanYorPMM_CRP(num_customers = 1000, 2, 0.5)$Table_ID )
+  table( PitmanYorPMM_CRP(num_customers = 1000, .5, 0.1)$Table_ID )
   ,xlab="Table Index", ylab="Frequency",main = "Chinese Restaurant Process"
 )
 # Test
@@ -128,17 +129,23 @@ plot(
 #'
 #' @param Ser_M 
 #' @param y 
+#' @param alpha concentration parameter of Dirichlet
+#' @param Initial either 1 when all initial are random, or 2 when all initials are 0.1 
 #'
 #' @return
 #' @export
 #'
 #' @examples
-Covg_M <- function(Ser_M, y) {
+Covg_M <- function(Ser_M, y, alpha=2, Initial=1) {
   n_y <- length(y)
   Num_Table <- rep(NA, length(Ser_M))
   # y <- Tables$X
-  alpha <- 2
-  ini_theta <- runif(n_y, 0, 1) #rep(0.1, n_y)
+  # alpha <- 2
+  if (Initial==1) {
+    ini_theta <- runif(n_y, -4, 4) # #rep(0.1, n_y) #
+  } else if (Initial==2) {
+    ini_theta <-  rep(0.1, n_y) #runif(n_y, -4, 4)
+  }
   q <- F_yiTi <- matrix(NA, nrow = n_y, ncol = n_y)
   cumuProb <- matrix(NA, nrow = n_y, ncol = n_y+1)
   Int <- rep(NA, n_y)
@@ -171,11 +178,19 @@ Covg_M <- function(Ser_M, y) {
 }
 
 # 
-DPMM_Data <- DPMM_CRP(100, 2)
+DPMM_Data <- DPMM_CRP(100, .3)
+plot(
+  table( DPMM_Data$Table_ID )
+  ,xlab="Table Index", ylab="Frequency", 
+  main = "Chinese Restaurant Process"
+)
+load(file = "data/Covg_M.Rdata")
+DPMM_Data <- All$Data
+
 y <- DPMM_Data$X
 
 # Draw graph to show convergency of algorithm
-Sim_M <-  floor(exp(c(1:7)))
+Sim_M <-  floor(exp(c(0:5)))
 Repp_1 <- replicate(100, 
                     {Test1 <- Covg_M(Sim_M[1], y)
                     Test1$NTables[,2]})
@@ -218,33 +233,112 @@ hist(Repp_6, breaks = 20, main = "M=403",
      xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_6)), max(Repp_6))); 
 abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
 
-# Show parameters comparison
-Test1 <- Covg_M(600, y)
-Test1$NTables; table(DPMM_Data$Table_ID)
 
-names(table(DPMM_Data$Center)); table(DPMM_Data$Center)
-Data_Plot <- data.frame(T)
-cbind(table( Test1$End_Tables) , names(table(DPMM_Data$Center)), table(DPMM_Data$Center))
-plot(table( round(Test1$End_Tables, digits = 3)) )
-plot(table(round(DPMM_Data$Center, digits = 3)))
+# Convergency of Algorithm 1 ----------------------------------------------
 
-cbind(DPMM_Data$Center, Test1$End_Tables)
-# table(Test1$End_Tables); table(DPMM_Data$Center)
+DPMM_Data <- DPMM_CRP(1000, .3)
+plot(
+  table( DPMM_Data$Table_ID )
+  ,xlab="Table Index", ylab="Frequency", 
+  main = "Chinese Restaurant Process"
+)
+hist(DPMM_Data$X)
+y <- DPMM_Data$X
 
-Sim_M <-  floor(exp(c(1:7))) # floor(exp(c(1:2))) 
-Sim_N <- 100
+load(file = "data/OneSimu_Diff.Rdata")
+DPMM_Data <- OneSimu_Diff$Data
+DPMM_Data$Table_ID <- as.factor(DPMM_Data$Table_ID)
+library(gridExtra)
+
+plot1 <- ggplot(DPMM_Data, aes(x = X)) +   # basic graphical object
+  geom_histogram(stat = "bin", binwidth = 0.09) +
+  ggtitle("Observed data")
+
+
+plot2 <- ggplot(DPMM_Data, aes(x = X, color=Table_ID, fill=Table_ID)) +   # basic graphical object
+  geom_histogram(stat = "bin", binwidth = 0.09) +
+  ggtitle("Mixture Model")
+
+
+# Sim ---------------------------------------------------------------------
+
+
+Sim_M <-  floor(exp(c(0:6))) # floor(exp(c(1:2))) 
+Sim_N <- 20
 NT_i <- c(); Avg_NT <- c() # average number of tables
 
 for (j in 1:length(Sim_M)) {
   for (i in 1:Sim_N) {
-    NT_i[i] <- Covg_M(Sim_M[j], y)$NTables$Tables
+    NT_i[i] <- Covg_M(Sim_M[j], y, alpha=0.3, Initial = 1)$NTables$Tables
   }
   Avg_NT[j] <- mean(NT_i)
 }
 
 Result_Covg <- data.frame(Sim_M=Sim_M, Avg_NT=Avg_NT)
 All <- list(Result_Covg=Result_Covg, Data=DPMM_Data)
-save(All, file = "data/Covg_M.Rdata")
+save(All, file = "data/Covg_M1.Rdata")
+# 
+Sim_M <-  floor(exp(c(0:6))) # floor(exp(c(1:2))) 
+Sim_N <- 20
+NT_i <- c(); Avg_NT <- c() # average number of tables
+
+for (j in 1:length(Sim_M)) {
+  for (i in 1:Sim_N) {
+    NT_i[i] <- Covg_M(Sim_M[j], y, alpha=0.3, Initial = 2)$NTables$Tables
+  }
+  Avg_NT[j] <- mean(NT_i)
+}
+
+Result_Covg <- data.frame(Sim_M=Sim_M, Avg_NT=Avg_NT)
+All2 <- list(Result_Covg=Result_Covg, Data=DPMM_Data)
+save(All2, file = "data/Covg_M2.Rdata")
+
+
+# Another simulation ------------------------------------------------------
+
+
+Sim_M <-  floor(exp(c(0:6))) # floor(exp(c(1:2))) 
+Sim_N <- 1
+NT_i <- c(); Avg_NT <- c() # average number of tables
+
+for (j in 1:length(Sim_M)) {
+  for (i in 1:Sim_N) {
+    NT_i[i] <- Covg_M(Sim_M[j], y, alpha=0.3, Initial = 1)$NTables$Tables
+  }
+  Avg_NT[j] <- mean(NT_i)
+}
+
+Result_Covg <- data.frame(Sim_M=Sim_M, Avg_NT=Avg_NT)
+OneSimu_Diff <- list(Result_Covg=Result_Covg, Data=DPMM_Data)
+save(OneSimu_Diff, file = "data/OneSimu_Diff.Rdata")
+# 
+Sim_M <-  floor(exp(c(0:6))) # floor(exp(c(1:2))) 
+Sim_N <- 1
+NT_i <- c(); Avg_NT <- c() # average number of tables
+
+for (j in 1:length(Sim_M)) {
+  for (i in 1:Sim_N) {
+    NT_i[i] <- Covg_M(Sim_M[j], y, alpha=0.3, Initial = 2)$NTables$Tables
+  }
+  Avg_NT[j] <- mean(NT_i)
+}
+
+Result_Covg <- data.frame(Sim_M=Sim_M, Avg_NT=Avg_NT)
+OneSimu_Same <- list(Result_Covg=Result_Covg, Data=DPMM_Data)
+save(OneSimu_Same, file = "data/OneSimu_Same.Rdata")
+
+Covg_fig <- data.frame(rbind(OneSimu_Diff$Result_Covg, OneSimu_Same$Result_Covg), 
+           Label = c(rep("AllDiff", 7), rep("AllSame", 7)))
+Fig_D <- list(Covg_fig=Covg_fig, Theo_cluster=length(unique(DPMM_Data$Table_ID)))
+save(Fig_D, file = "data/Fig_D.Rdata")
+
+ggplot(data=Fig_D$Covg_fig, aes(x=Sim_M, y=Avg_NT, color=Label)) +
+  geom_line() + geom_point() + 
+  geom_hline(yintercept = Fig_D$Theo_cluster, color="blue") +
+  labs(x = "Simulate Times of Gibbs Sampler") + labs(y = "Average number of clusters") +
+  ggtitle("Algorithm convergency") +
+  theme(plot.title = element_text(hjust = 0.5))
+
 
 
 # Gibbs Sampling: Algorithm 3 ---------------------------------------------
