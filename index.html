@@ -177,7 +177,7 @@
     <h2>MCMC &amp; Gibbs Sampler</h2>
   </hgroup>
   <article data-timings="">
-    <p><strong>Gibbs Sampler:</strong> also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others \((\theta = (\theta_1, \cdots , \theta_d))\).</p>
+    <p><strong>Gibbs Sampler:</strong> also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others \((X = (X_1, \cdots , X_d))\).</p>
 
 <ol>
 <li>Starts from an arbitrary state \(\mathbf{X}^{(0)}=\mathbf{x}^{(0)}\)</li>
@@ -259,7 +259,7 @@ div.footnotes {
 G_0 \sim \mathcal{N}(0,2) 
 \end{array}\]</p>
 
-<p>In order to implement, explicit expression is <footnote content="Neal, R. M. (2000).">needed</footnote>: \[\theta^t_{i}|\theta^t_{-i},y_i \sim \sum_{j\ne i} b_i F(y_i, \theta_j) \delta(\theta^t_j) + b_i \alpha \bigg[\int F(y_i, \theta)G_0(\theta)\bigg] H_i\] </p>
+<p>In order to implement, explicit expression is <footnote content="Neal, R. M. (2000)."> needed </footnote>: \[\theta^t_{i}|\theta^t_{-i},y_i \sim \sum_{j\ne i} b_i F(y_i, \theta^t_j) \delta(\theta^t_j) + b_i \alpha \bigg[\int F(y_i, \theta)G_0(\theta)\bigg] H_i\] </p>
 
 <p>\[b_i=\frac{1}{\sum_{j\ne i}F(y_i, \theta_j) + \alpha \int F(y_i, \theta)G_0(\theta)}\]</p>
 
@@ -470,7 +470,7 @@ G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bi
 
 <slide class="" id="slide-21" style="background:;">
   <hgroup>
-    <h2>Gibbs Sampler results</h2>
+    <h2>Gibbs Sampler results for 2D DPMM</h2>
   </hgroup>
   <article data-timings="">
     <p>Underlying clusters and estimated clusters from Gibbs Sample 
@@ -485,14 +485,14 @@ G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bi
 
 <slide class="" id="slide-22" style="background:;">
   <hgroup>
-    <h2>Gibbs Sampler results</h2>
+    <h2>Gibbs Sampler results for 2D DPMM</h2>
   </hgroup>
   <article data-timings="">
     <p>Underlying clusters and estimated clusters from Gibbs Sample 
 <br> <br></p>
 
 <p><center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
-<img width=450px height=450px src="figure/2D_Cluster_Est.png" align="right"></img>
+<img width=450px height=450px src="figure/2D_Clusters_Est1.png" align="right"></img>
 </center></p>
 
   </article>
@@ -500,6 +500,38 @@ G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bi
 </slide>
 
 <slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>Gibbs Sampler results for 2D DPMM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Underlying clusters and estimated clusters from Gibbs Sample 
+<br> <br></p>
+
+<p><center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=450px height=450px src="figure/2D_Clusters_Est2.png" align="right"></img>
+</center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>Gibbs Sampler results for 2D DPMM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Underlying clusters and estimated clusters from Gibbs Sample 
+<br> <br></p>
+
+<p><center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=450px height=450px src="figure/2D_Clusters_Est3.png" align="right"></img>
+</center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-25" style="background:;">
   <hgroup>
     <h2>Take Aways</h2>
   </hgroup>
@@ -642,20 +674,32 @@ G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bi
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=21 title='Gibbs Sampler results'>
+        data-slide=21 title='Gibbs Sampler results for 2D DPMM'>
          21
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=22 title='Gibbs Sampler results'>
+        data-slide=22 title='Gibbs Sampler results for 2D DPMM'>
          22
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=23 title='Take Aways'>
+        data-slide=23 title='Gibbs Sampler results for 2D DPMM'>
          23
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=24 title='Gibbs Sampler results for 2D DPMM'>
+         24
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=25 title='Take Aways'>
+         25
       </a>
     </li>
   </ul>

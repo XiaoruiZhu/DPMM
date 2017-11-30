@@ -79,7 +79,7 @@ $$\begin{array}
 ---
 ## MCMC & Gibbs Sampler
 
-**Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(\theta = (\theta_1, \cdots , \theta_d))$.
+**Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(X = (X_1, \cdots , X_d))$.
 
 1. Starts from an arbitrary state $\mathbf{X}^{(0)}=\mathbf{x}^{(0)}$
 2. Moves with transition probability density: $$\mathbf{K}_G(\bf{x, y})=\prod^d_{\ell=1}\pi(y_\ell|\mathbf{y}_{1 : \ell -1}, \mathbf{x}_{\ell+1 : d})$$
@@ -154,7 +154,7 @@ Simple Mixture Model: $$\begin{array} {l}
 G_0 \sim \mathcal{N}(0,2) 
 \end{array}$$
 
-In order to implement, explicit expression is <footnote content="Neal, R. M. (2000).">needed</footnote>: $$\theta^t_{i}|\theta^t_{-i},y_i \sim \sum_{j\ne i} b_i F(y_i, \theta_j) \delta(\theta^t_j) + b_i \alpha \bigg[\int F(y_i, \theta)G_0(\theta)\bigg] H_i$$ 
+In order to implement, explicit expression is <footnote content="Neal, R. M. (2000)."> needed </footnote>: $$\theta^t_{i}|\theta^t_{-i},y_i \sim \sum_{j\ne i} b_i F(y_i, \theta^t_j) \delta(\theta^t_j) + b_i \alpha \bigg[\int F(y_i, \theta)G_0(\theta)\bigg] H_i$$ 
 
 $$b_i=\frac{1}{\sum_{j\ne i}F(y_i, \theta_j) + \alpha \int F(y_i, \theta)G_0(\theta)}$$
 
@@ -296,7 +296,7 @@ G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bi
 
 
 --- 
-## Gibbs Sampler results
+## Gibbs Sampler results for 2D DPMM
 
 Underlying clusters and estimated clusters from Gibbs Sample 
 <br> <br>
@@ -305,14 +305,35 @@ Underlying clusters and estimated clusters from Gibbs Sample
 </center>
 
 --- 
-## Gibbs Sampler results
+## Gibbs Sampler results for 2D DPMM
 
 Underlying clusters and estimated clusters from Gibbs Sample 
 <br> <br>
 
 <center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
-<img width=450px height=450px src="figure/2D_Cluster_Est.png" align="right"></img>
+<img width=450px height=450px src="figure/2D_Clusters_Est1.png" align="right"></img>
 </center>
+
+--- 
+## Gibbs Sampler results for 2D DPMM
+
+Underlying clusters and estimated clusters from Gibbs Sample 
+<br> <br>
+
+<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=450px height=450px src="figure/2D_Clusters_Est2.png" align="right"></img>
+</center>
+
+--- 
+## Gibbs Sampler results for 2D DPMM
+
+Underlying clusters and estimated clusters from Gibbs Sample 
+<br> <br>
+
+<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=450px height=450px src="figure/2D_Clusters_Est3.png" align="right"></img>
+</center>
+
 
 ---
 ## Take Aways 

@@ -79,7 +79,7 @@ $$\begin{array}
 ---
 ## MCMC & Gibbs Sampler
 
-**Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(\theta = (\theta_1, \cdots , \theta_d))$.
+**Gibbs Sampler:** also called alternating conditional sampling. Each iteration draws each subset conditional on the value of all the others $(X = (X_1, \cdots , X_d))$.
 
 1. Starts from an arbitrary state $\mathbf{X}^{(0)}=\mathbf{x}^{(0)}$
 2. Moves with transition probability density: $$\mathbf{K}_G(\bf{x, y})=\prod^d_{\ell=1}\pi(y_\ell|\mathbf{y}_{1 : \ell -1}, \mathbf{x}_{\ell+1 : d})$$
@@ -305,7 +305,7 @@ G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bi
 
 
 --- 
-## Gibbs Sampler results
+## Gibbs Sampler results for 2D DPMM
 
 Underlying clusters and estimated clusters from Gibbs Sample 
 <br> <br>
@@ -314,14 +314,35 @@ Underlying clusters and estimated clusters from Gibbs Sample
 </center>
 
 --- 
-## Gibbs Sampler results
+## Gibbs Sampler results for 2D DPMM
 
 Underlying clusters and estimated clusters from Gibbs Sample 
 <br> <br>
 
 <center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
-<img width=450px height=450px src="figure/2D_Cluster_Est.png" align="right"></img>
+<img width=450px height=450px src="figure/2D_Clusters_Est1.png" align="right"></img>
 </center>
+
+--- 
+## Gibbs Sampler results for 2D DPMM
+
+Underlying clusters and estimated clusters from Gibbs Sample 
+<br> <br>
+
+<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=450px height=450px src="figure/2D_Clusters_Est2.png" align="right"></img>
+</center>
+
+--- 
+## Gibbs Sampler results for 2D DPMM
+
+Underlying clusters and estimated clusters from Gibbs Sample 
+<br> <br>
+
+<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=450px height=450px src="figure/2D_Clusters_Est3.png" align="right"></img>
+</center>
+
 
 ---
 ## Take Aways 
