@@ -12,11 +12,11 @@ library(ggplot2);library(MASS)
 #' @examples
 DPMM_2D <- function(num_customers, theta, sig2=0.1, sig2_0=2) {
   
-  sigma <- matrix(c(sig2,0,0,sig2),nrow=2)
+  sigma <- matrix(c(sig2,0,0,sig2),nrow=2, byrow = T)
   mu <- matrix(NA, num_customers, 2)
   clusterList <- NULL
   orig_cluster <- round(theta*log(num_customers)+10)
-  mudelta <- mvrnorm(n=orig_cluster, c(0,0), matrix(c(sig2_0,0,0,sig2_0),nrow = 2))
+  mudelta <- mvrnorm(n=orig_cluster, c(0,0), matrix(c(sig2_0,0,0,sig2_0),nrow = 2, byrow = T))
     # matrix(5*runif(orig_cluster*2, 0, 1) , 
     #                 nrow = orig_cluster, ncol = 2)
   
@@ -27,21 +27,22 @@ DPMM_2D <- function(num_customers, theta, sig2=0.1, sig2_0=2) {
   X[1,] <- mvrnorm(1, mudelta[table_ID,], sigma)
   clusterList[1,] <- c(table_Customers, table_ID, X[1,], mudelta[table_ID, ])
   for (i in 2:num_customers) {
-    if (runif(1,0,1) < (theta) / (i - 1 + theta)) {
+    Draw_Rand <- runif(1, 0, 1)
+    if ( Draw_Rand > (1- (theta) / (i - 1 + theta)) ) {
       # Add a new table
       table_ID <- c(table_ID, next_table)
-      X[i,] <- mvrnorm(n=1,mudelta[next_table,],sigma)
+      X[i,] <- mvrnorm(n=1, mudelta[next_table,], sigma)
       #put in the 2-D normal cluster using the cluster number as mean vector
       table_Customers <- c(table_Customers, 1)
       clusterList[i,] <- c(i, next_table, X[i,], mudelta[next_table,])
       next_table <- next_table+1
     } else {
       # The nth customer chooses the first unoccupied table with probability
-      # theta/(n−1+theta), and an occupied table with probability c/(n−1+theta), where c is the
-      # number of people sitting at that table.
-      Draw_Rand <- runif(1, 0, 1)
-      select_table <- min(which(cumsum(table_Customers/(i-1))>=Draw_Rand))
+      # theta/(n−1+theta), and an occupied table with probability c/(n−1+theta), 
+      # where c is the number of people sitting at that table.
       
+      select_table <- min(which(cumsum(table_Customers/(i-1+theta))>=Draw_Rand))
+      # Here is a typo, wrong probability for sitting at old table
       table_Customers[select_table] <- table_Customers[select_table] + 1
       X[i,] <- mvrnorm(n=1, mudelta[select_table, ], sigma)
       clusterList[i,] <- c(i, select_table, X[i,], mudelta[select_table,])
@@ -58,7 +59,7 @@ DPMM_2D <- function(num_customers, theta, sig2=0.1, sig2_0=2) {
 
 # Simple example to check function ----------------------------------------
 n <- 1000; theta <- .4
-DPMM01 <- DPMM_2D(n, theta, sig2 = .5, sig2_0=2)
+DPMM01 <- DPMM_2D(n, theta, sig2 = .01, sig2_0=4)
 
 # Draw graph to show clusters ---------------------------------------------
 clusters <- as.data.frame(DPMM01, row.names = T)
@@ -100,19 +101,26 @@ theta * log(n)
 #' @export
 #'
 #' @examples
-Covg_M_2D <- function(Ser_M, y, alpha=2, sig2=0.01, sig2_0=2) {
-  S1 <- sig2_0/(sig2_0 + sig2)
+Covg_M_2D <- function(Ser_M, y, alpha=2, sig2=0.01, sig2_0=2, Initial=1) {
+  # S1 <- sig2_0/(sig2_0 + sig2)
   n_y <- dim(y)[1]
   Num_Table <- rep(NA, length(Ser_M))
   All_theta <- array(NA, dim = c(n_y, 2, length(Ser_M)) )
-  ini_theta <-  y #matrix(rep(0, 2*n_y), nrow = n_y, ncol = 2)  # matrix(runif(2*n_y, 0, 1), nrow = n_y, ncol = 2) # 
+  if (Initial==1) {
+    ini_theta <- matrix(runif(2*n_y, 0, 1), nrow = n_y, ncol = 2) # 
+  } else if (Initial==2) {
+    ini_theta <- matrix(rep(0.1, 2*n_y), nrow = n_y, ncol = 2)
+  } else if (Initial==3) {
+    ini_theta <- y
+  }
   theta <- matrix(NA, nrow = n_y, ncol = 2)
   q <- F_yiTi <- matrix(NA, nrow = n_y, ncol = n_y)
   Int <- rep(NA, n_y)
   select_cluster <- b <- r <- c()
   for (m in 1:max(Ser_M)) {
     for (i in 1:n_y) {
-      F_yiTi[i, ] <- 1/(2*pi*sig2) * exp(-1/(2*sig2) * rowSums((y[i,] - ini_theta)^2))
+      Temp_y <- matrix(rep(y[i,], n_y), nrow = n_y, ncol = 2, byrow = T)
+      F_yiTi[i, ] <- 1/(2*pi*sig2) * exp(-1/(2*sig2) * rowSums((Temp_y - ini_theta)^2))
       Int[i] <- 1/(2 * (sig2+sig2_0) * pi) * exp(-1/(2* (sig2+sig2_0)) * sum((y[i,])^2))
       b[i] <- 1/(sum(F_yiTi[i,-c(i)]) + alpha * Int[i])
       q[i, ] <- b[i] * F_yiTi[i, ]
@@ -121,13 +129,13 @@ Covg_M_2D <- function(Ser_M, y, alpha=2, sig2=0.01, sig2_0=2) {
       select_cluster[i] <- min(which(cumsum( c(q[i,-c(i)], r[i]) ) >= Draw_Rand))
       
       if (select_cluster[i] > (n_y-1)) {
-        ini_theta[i, ] <- mvrnorm(n = 1, mu = sig2_0/(sig2+sig2_0) * y[i,], 
+        theta[i, ] <- mvrnorm(n = 1, mu = sig2_0/(sig2+sig2_0) * y[i,], 
                               Sigma = matrix(c(sig2_0*sig2/(sig2+sig2_0),0,0,sig2_0*sig2/(sig2+sig2_0)), 2, 2, byrow = T))
       } else {
-        ini_theta[i, ] <- (ini_theta[-c(i), ])[select_cluster[i], ]
+        theta[i, ] <- (ini_theta[-c(i), ])[select_cluster[i], ]
       }
     }
-    theta <- ini_theta
+    ini_theta <- theta
     Ser_ID <- which(Ser_M==m)
     if (length(Ser_ID)!=0) {
       All_theta[,,Ser_ID] <- theta
@@ -139,8 +147,8 @@ Covg_M_2D <- function(Ser_M, y, alpha=2, sig2=0.01, sig2_0=2) {
 }
 
 # 
-sig2=.01; sig2_0=1
-DPMM_Data <- DPMM_2D(num_customers = 1000, theta = 0.4, 
+sig2=.1; sig2_0=4; true_theta=0.4
+DPMM_Data <- DPMM_2D(num_customers = 1000, theta = true_theta, 
                      sig2 = sig2, sig2_0 = sig2_0)
 plot(
   table( DPMM_Data[, "Table_ID"] )
@@ -152,11 +160,11 @@ clusters <- as.data.frame(DPMM_Data, row.names = T)
 clusters[,2] <- as.factor(clusters[,2])
 centers <- as.data.frame(DPMM_Data[,5:6], row.names = T)
 colnames(centers) <- c("dim1","dim2")
-p <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4])) + 
+p <- ggplot(data=clusters, aes(x=X1, y=X2)) + 
   geom_point()
 p + geom_point(data=centers,
                aes(x=dim1,y=dim2),inherit.aes = FALSE)
-p2 <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4], color=clusters[,2])) + 
+p2 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID)) + 
   geom_point()
 p2 + geom_point(data=centers,
                 aes(x=dim1,y=dim2),inherit.aes = FALSE)
@@ -164,24 +172,22 @@ p2 + geom_point(data=centers,
 # load(file = "data/Covg_M.Rdata")
 
 y <- DPMM_Data[, c("X1", "X2")]
-Sim_M <-  floor(exp(c(1:8, 9, 9.5, 10)))
+Sim_M <-  floor(exp(c(0:8, 9, 9.5, 10)))
 
-Test1 <- Covg_M_2D(Ser_M = Sim_M[1:11],y = y, alpha = 0.4, 
-                   sig2 = sig2, sig2_0 = sig2_0)
+Test1 <- Covg_M_2D(Ser_M = Sim_M[1:9], y = y, alpha = true_theta, 
+                   sig2 = sig2, sig2_0 = sig2_0, Initial = 3)
 
 ALLD <- list(Data=DPMM_Data, Results=Test1)
-save(ALLD, file = "data/ALL_D.Rdata")
-
-load(file = "data/ALL_D.Rdata")
+# save(ALLD, file = "data/ALL_D.Rdata")
+# 
+# load(file = "data/ALL_D.Rdata")
 Test1 <- ALLD$Results
 DPMM_Data <- ALLD$Data
 Test1$NTables
-dim(unique(Test1$End_Tables))[1]
-unique(Test1$All_theta[,,6]); unique(Test1$All_theta[,,7]); 
-unique(Test1$All_theta[,,8]); unique(Test1$All_theta[,,9]); 
-unique(Test1$All_theta[,,10]);unique(Test1$All_theta[,,11])
-unique(Test1$End_Tables)
-unique(DPMM_Data[, c("Center1", "Center2")])
+# dim(unique(Test1$End_Tables))[1]
+# unique(Test1$All_theta[,,5])
+# unique(Test1$End_Tables)
+# unique(DPMM_Data[, c("Center1", "Center2")])
 
 library(ggplot2)
 clusters <- as.data.frame(DPMM_Data, row.names = T)
@@ -196,17 +202,60 @@ p3 + geom_point(data=centers, aes(x=dim1,y=dim2),
   labs(x = "X1") + labs(y = "X2")
   
 
-Pred_center2 <- as.data.frame(Test1$All_theta[,,11], row.names = T)
+Pred_center2 <- as.data.frame(Test1$All_theta[,,7], row.names = T)
 colnames(Pred_center2) <- c("dim1","dim2")
 Table_ID_Est <- as.factor(Pred_center2[,1])
 # Rename all levels
 levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
 p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
   geom_point() 
-p3 + geom_point(data=Pred_center2, aes(x=dim1,y=dim2),
-                inherit.aes = FALSE) + 
-  ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[11])) +
+p3 + 
+  geom_point(data=Pred_center2, 
+             aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 5) + 
+  ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[7])) +
   labs(x = "X1") + labs(y = "X2")
+
+Pred_center2 <- as.data.frame(Test1$All_theta[,,8], row.names = T)
+colnames(Pred_center2) <- c("dim1","dim2")
+Table_ID_Est <- as.factor(Pred_center2[,1])
+# Rename all levels
+levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
+p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
+  geom_point() 
+p3 + 
+  geom_point(data=Pred_center2, 
+             aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 5) + 
+  ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[8])) +
+  labs(x = "X1") + labs(y = "X2")
+
+Pred_center2 <- as.data.frame(Test1$All_theta[,,9], row.names = T)
+colnames(Pred_center2) <- c("dim1","dim2")
+Table_ID_Est <- as.factor(Pred_center2[,1])
+# Rename all levels
+levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
+p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
+  geom_point() 
+p3 + 
+  geom_point(data=Pred_center2, 
+             aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 5) + 
+  ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[9])) +
+  labs(x = "X1") + labs(y = "X2")
+
+Pred_center2 <- as.data.frame(Test1$All_theta[,,6], row.names = T)
+colnames(Pred_center2) <- c("dim1","dim2")
+Table_ID_Est <- as.factor(Pred_center2[,1])
+# Rename all levels
+levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
+p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
+  geom_point() 
+p3 + 
+  geom_point(data=Pred_center2, 
+             aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 5) + 
+  ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[6])) +
+  labs(x = "X1") + labs(y = "X2")
+
+
+# Haven’t change ----------------------------------------------------------
 
 
 Pred_center3 <- as.data.frame(Test1$All_theta[,,7], row.names = T)

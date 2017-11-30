@@ -13,18 +13,19 @@
 #' @export
 #'
 #' @examples
-DPMM_CRP <- function(num_customers, theta) {
+DPMM_CRP <- function(num_customers, theta, sig2=1, sig2_0=3) {
   table_ID <- c(1); table_Customers <- c(1)
-  Center_TRUE <-  rnorm(1, 0, 3) # runif(1, -10, 10) ;
+  Center_TRUE <-  rnorm(1, 0, sig2_0) # runif(1, -10, 10) ;
   Center <- c(Center_TRUE)
-  next.table <- 2; X <- rnorm(1, Center_TRUE[1], 1)
+  next.table <- 2; X <- rnorm(1, Center_TRUE[1], sig2)
   for (i in 2:num_customers) {
-    if (runif(1,0,1) < (theta) / (i - 1 + theta)) {
+    Draw_Rand <- runif(1, 0, 1)
+    if (Draw_Rand > (1 - (theta) / (i - 1 + theta)) ) {
       # Add a new ball color/ table
       table_ID <- c(table_ID, next.table)
       table_Customers <- c(table_Customers, 1)
-      Center_TRUE[next.table] <- rnorm(1, 0, 3) # runif(1, -10, 10) 
-      X[i] <- rnorm(1, Center_TRUE[next.table], 1)
+      Center_TRUE[next.table] <- rnorm(1, 0, sig2_0) # runif(1, -10, 10) 
+      X[i] <- rnorm(1, Center_TRUE[next.table], sig2)
       Center[i] <- Center_TRUE[next.table]
       next.table <- next.table+1
     } else {
@@ -34,12 +35,10 @@ DPMM_CRP <- function(num_customers, theta) {
       # α/(n−1+α), and an occupied table with probability c/(n−1+α), where c is the
       # number of people sitting at that table.
       # select.table <- table_ID[sample(1:length(table_ID), 1)]
-      
-      Draw_Rand <- runif(1, 0, 1)
-      select_table <- min(which(cumsum(table_Customers/(i-1))>=Draw_Rand))
+      select_table <- min(which(cumsum(table_Customers/(i-1+theta))>=Draw_Rand))
       
       table_Customers[select_table] <- table_Customers[select_table] + 1
-      X[i] <- rnorm(1, Center_TRUE[select_table], 1)
+      X[i] <- rnorm(1, Center_TRUE[select_table], sig2)
       Center[i] <- Center_TRUE[select_table]
       table_ID <- c(table_ID, select_table)
     }
@@ -49,14 +48,14 @@ DPMM_CRP <- function(num_customers, theta) {
 }
 
 # Test
-Test1 <- DPMM_CRP(200, 2)
+Test1 <- DPMM_CRP(2000, 2)
 (table(Test1$Table_ID))
-table(Test1$Center)
+# table(Test1$Center)
 
-2*log(200)
+2*log(2000)
 
 plot(
-  table( DPMM_CRP(num_customers = 1000, .3)$Table_ID )
+  table( DPMM_CRP(num_customers = 1000, .4)$Table_ID )
   ,xlab="Table Index", ylab="Frequency", 
   main = "Chinese Restaurant Process"
 )
@@ -147,7 +146,6 @@ Covg_M <- function(Ser_M, y, alpha=2, Initial=1) {
     ini_theta <-  rep(0.1, n_y) #runif(n_y, -4, 4)
   }
   q <- F_yiTi <- matrix(NA, nrow = n_y, ncol = n_y)
-  cumuProb <- matrix(NA, nrow = n_y, ncol = n_y+1)
   Int <- rep(NA, n_y)
   theta <- select_theta <- b <- r <- c()
   for (m in 1:max(Ser_M)) {
@@ -178,7 +176,7 @@ Covg_M <- function(Ser_M, y, alpha=2, Initial=1) {
 }
 
 # 
-DPMM_Data <- DPMM_CRP(100, .3)
+DPMM_Data <- DPMM_CRP(100, .4, sig2 = 1, sig2_0 = 2)
 plot(
   table( DPMM_Data$Table_ID )
   ,xlab="Table Index", ylab="Frequency", 
@@ -236,7 +234,7 @@ abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
 
 # Convergency of Algorithm 1 ----------------------------------------------
 
-DPMM_Data <- DPMM_CRP(1000, .3)
+DPMM_Data <- DPMM_CRP(1000, .3, sig2 = 1, sig2_0 = 2)
 plot(
   table( DPMM_Data$Table_ID )
   ,xlab="Table Index", ylab="Frequency", 
@@ -245,20 +243,20 @@ plot(
 hist(DPMM_Data$X)
 y <- DPMM_Data$X
 
-load(file = "data/OneSimu_Diff.Rdata")
-DPMM_Data <- OneSimu_Diff$Data
+# load(file = "data/OneSimu_Diff.Rdata")
+# DPMM_Data <- OneSimu_Diff$Data
 DPMM_Data$Table_ID <- as.factor(DPMM_Data$Table_ID)
 library(gridExtra)
 
 plot1 <- ggplot(DPMM_Data, aes(x = X)) +   # basic graphical object
   geom_histogram(stat = "bin", binwidth = 0.09) +
   ggtitle("Observed data")
-
+print(plot1)
 
 plot2 <- ggplot(DPMM_Data, aes(x = X, color=Table_ID, fill=Table_ID)) +   # basic graphical object
   geom_histogram(stat = "bin", binwidth = 0.09) +
   ggtitle("Mixture Model")
-
+print(plot2)
 
 # Sim ---------------------------------------------------------------------
 
@@ -340,56 +338,74 @@ ggplot(data=Fig_D$Covg_fig, aes(x=Sim_M, y=Avg_NT, color=Label)) +
   theme(plot.title = element_text(hjust = 0.5))
 
 
+# Draw convergency --------------------------------------------------------
 
-# Gibbs Sampling: Algorithm 3 ---------------------------------------------
-Ser_M <- c(1:50,100, 200)
-Ser_M <- 10
-DPMM_Data <- DPMM_CRP(1000, 2)
+
+# DPMM --------------------------------------------------------------------
+Draw_n <- c(1:10, 30, 50, 150, 300, 500, 1000, 2000); alpha = 0.3
 y <- DPMM_Data$X
+library(extrafont)
+loadfonts(device = "pdf")
 
-n_y <- length(y)
-Num_Table <- rep(NA, length(Ser_M))
+# dir.create("examples")
+setwd("Example")
+require(ggplot2)
+png(file="M1_gibbs%02d.png", width=600, height=600)
 
-alpha <- 2
-ini_Table <- rep(1, n_y) ##c(1:n_y) 
-
-Int <- rep(NA, n_y)
-select_Table <- b <- r <- c()
-Table <- matrix(NA, nrow = Ser_M, ncol = n_y)
-for (m in 1:Ser_M) {
-  for (i in 1:n_y) {
-    # i <- +1
-    n_ic <- table(ini_Table[-i])
-    q <- Int_c <- matrix(NA, nrow = 1, ncol = dim(n_ic))
-    cumuProb <- matrix(NA, nrow = 1, ncol = dim(n_ic)+2)
-    # <- matrix(NA, nrow = n_y, ncol = dim(n_ic)+2)
-    for (j in 1:dim(n_ic)) {
-      sum_yj <- sum(y[ini_Table==n_ic[j]][-i])
-      sum_yj2 <- sum((y[ini_Table==n_ic[j]][-i])^2)
-      Int_c[1, j] <- n_ic[j]/(n_y-1+alpha) * (sqrt(3))^(n_ic[j]-1) / (sqrt(2*pi* (2*n_ic[j]+1)^3)) * 
-        (2 * sum_yj - (2 * n_ic[j] -1) * y[i]) *
-        exp((2 * n_ic[j] + 1)/4 * (2*(y[i] + sum_yj)/(2*n_ic[j]+1))^2 - 0.5 * (y[i])^2 - 1/3 * sum_yj2)
-    }
-    Int[i] <- alpha/(n_y-1+alpha) * 1/sqrt(6 * pi) * exp(-1/6 * (y[i])^2)
-    b[i] <- 1/(sum(Int_c[1,]) + Int[i])
-    q[1, ] <- b[i] * Int_c[1, ]
-    r[i] <- b[i] *  Int[i]
-    cumuProb[1, ] <- cumulateP(c(q[1,], r[i]), N = (dim(n_ic)+1))
-    select_Table[i] <- max(which(cumuProb[1, ] <= runif(1,0,1)))
-    if (select_Table[i] <= dim(n_ic)) {
-      ini_Table[i] <- as.numeric(names(n_ic[select_Table[i]]))
-    }  
-    # if (select_Table[i] > (n_y-1)) {
-    #   Table[i] <- rnorm(1, 2/3 * y[i], sd = sqrt(2/3))
-    # } else {
-    #   Table[i] <- (ini_Table[-c(i)])[select_Table[i]]
-    # }
-  }
-  Table[m, ] <- ini_Table
-  Ser_ID <- which(Ser_M==m)
-  if (length(Ser_ID)!=0) {
-    Num_Table[Ser_ID] <- length(unique(Table))
-  }
+for (i in c(1:length(Draw_n))) {
+  # plot.new()
+  Test1 <- Covg_M(Draw_n[i], y, alpha = 0.3, Initial = 1)
+  # table(DPMM_Data$Center); table(Test1$End_Tables)
+  CombD2 <- data.frame(y=c(DPMM_Data$Center, Test1$End_Tables), 
+                       Label=c(rep("TRUE", 1000), rep("Gibbs", 1000)))
+  # Data generation
+  tit <- paste("Gibbs Centers vs. True Centers : M=", Draw_n[i])
+  p2 <- ggplot(CombD2, aes(x = y, color=Label, fill=Label)) +   # basic graphical object
+    geom_histogram(stat = "bin", binwidth = 0.1) +
+    ggtitle(tit) +
+    xlim(-6, 4) + ylim(0, 1000) + 
+    theme(text=element_text(size=16, family="Comic Sans MS"))
+  
+  print(p2)
 }
-unique(Table[Ser_M,])
+dev.off()
+system("magick convert -delay 100 M1_gibbs*.png Try1.gif")
+
+# to not leave the directory with the single jpeg files
+# I remove them.
+file.remove(list.files(pattern=".png"))
+file.remove(list.files(pattern=".gif"))
+
+
+# DPMM_ 2 -----------------------------------------------------------------
+
+Draw_n <- c(1:10, 30, 50, 150, 300, 500, 1000, 2000); alpha = 0.3
+y <- DPMM_Data$X
+library(extrafont)
+loadfonts(device = "pdf")
+
+# dir.create("examples")
+setwd("Example")
+require(ggplot2)
+png(file="M2_gibbs_Diff%02d.png", width=600, height=600)
+
+for (i in c(1:length(Draw_n))) {
+  # plot.new()
+  Test1 <- Covg_M(Draw_n[i], y, alpha = 0.3, Initial = 2)
+  # table(DPMM_Data$Center); table(Test1$End_Tables)
+  CombD2 <- data.frame(y=c(DPMM_Data$Center, Test1$End_Tables), 
+                       Label=c(rep("TRUE", 1000), rep("Gibbs", 1000)))
+  # Data generation
+  tit <- paste("Gibbs Centers vs. True Centers : M=", Draw_n[i])
+  p2 <- ggplot(CombD2, aes(x = y, color=Label, fill=Label)) +   # basic graphical object
+    geom_histogram(stat = "bin", binwidth = 0.1) +
+    ggtitle(tit) +
+    xlim(-6, 4) + ylim(0, 1000) + 
+    theme(text=element_text(size=16, family="Comic Sans MS"))
+  
+  print(p2)
+}
+dev.off()
+system("magick convert -delay 100 M2_gibbs_Diff*.png Try2.gif")
+
 
