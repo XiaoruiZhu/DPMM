@@ -251,7 +251,7 @@ Average total number of clusters $(K_n)$ v.s iteration times $(M)$ of Gibbs Samp
 
 $(n=1000, M\in (1,2,7,20,54,148,403))$
 
-<img src="assets/fig/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
+<img src="figure/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" />
 
 
 ---
@@ -335,6 +335,15 @@ Underlying clusters and estimated clusters from Gibbs Sample
 
 <center><img width=450px height=400px src="figure/2D_Clusters_T.png" align="left"></img>
 <img width=500px height=500px src="figure/2D_Clusters_Est4.png" align="right"></img>
+</center>
+
+--- 
+## Gibbs Sampler results for 2D DPMM
+
+Underlying clusters and estimated clusters from Gibbs Sample 
+<br> 
+
+<center><img width=500px height=500px src="figure/2D_Clusters_animation.gif"></img>
 </center>
 
 
