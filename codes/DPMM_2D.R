@@ -1,7 +1,7 @@
 library(ggplot2);library(MASS)
 
 #' DPMM_2D
-#' the function to generate Chinese Restaurant Process with base measure of 2D Gaussian distribution
+#' the function to generate DPMM with base measure of 2D Gaussian distribution
 #'
 #' @param num_customers the total number of customers for simulation
 #' @param theta the concentration parameter in Dirichlet Process, or 
@@ -86,11 +86,12 @@ theta * log(n)
 # Gibbs Sampling: Algorithm 1 ---------------------------------------------
 
 #' Covg_M_2D
-#' is a function to show the convergence of Algorithm 1 or 3 in Neal, R. M. (2000). 
+#' function for Gibbs Sampler of 2D-DPMM, can be used to show the convergence of 
+#' Algorithm 1 or 3 in Neal, R. M. (2000). 
 #' Markov chain sampling methods for Dirichlet process mixture models. 
 #' Journal of computational and graphical statistics, 9(2), 249-265.
 #'
-#' @param Ser_M iteration times
+#' @param Ser_M iteration times series that want to be saved
 #' @param y 2D observed data
 #' @param alpha concentration parameter of Dirichlet
 #' @param sig2 variances of y
@@ -107,9 +108,9 @@ Covg_M_2D <- function(Ser_M, y, alpha=2, sig2=0.01, sig2_0=2, Initial=1) {
   Num_Table <- rep(NA, length(Ser_M))
   All_theta <- array(NA, dim = c(n_y, 2, length(Ser_M)) )
   if (Initial==1) {
-    ini_theta <- matrix(runif(2*n_y, 0, 1), nrow = n_y, ncol = 2) # 
+    ini_theta <- matrix(runif(2*n_y, 0, 1), nrow = n_y, ncol = 2) # all different
   } else if (Initial==2) {
-    ini_theta <- matrix(rep(0.1, 2*n_y), nrow = n_y, ncol = 2)
+    ini_theta <- matrix(rep(0.1, 2*n_y), nrow = n_y, ncol = 2) # all same
   } else if (Initial==3) {
     ini_theta <- y
   }
@@ -179,9 +180,9 @@ Test1 <- Covg_M_2D(Ser_M = Sim_M[1:9], y = y, alpha = true_theta,
                    sig2 = sig2, sig2_0 = sig2_0, Initial = 2)
 
 ALLD <- list(Data=DPMM_Data, Results=Test1)
-# save(ALLD, file = "data/ALL_D.Rdata")
-# 
-# load(file = "data/ALL_D.Rdata")
+save(ALLD, file = "data/ALL_D.Rdata")
+
+load(file = "data/ALL_D.Rdata")
 Test1 <- ALLD$Results
 DPMM_Data <- ALLD$Data
 Test1$NTables
