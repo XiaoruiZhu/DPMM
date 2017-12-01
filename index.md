@@ -292,46 +292,49 @@ G_0 & \sim \mathcal{N}\bigg(\bigg(\begin{array}{c}0\\ 0\\ \end{array}\bigg), \bi
 
 - Likelihood function: $F\bigg(\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg)|\bigg(\begin{array}{c} \theta_{i,1}\\ \theta_{i,2}\\ \end{array}\bigg)\bigg) = \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}(\mathbf{y_{i\cdot}} - \theta_{i\cdot})^2}$
 
-- Posterior distribution $H_i \sim \mathcal{N}\bigg(\frac{\sigma^2_0}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg), \frac{\sigma^2_0\sigma^2}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{cc}1 & \\ & 1\\ \end{array}\bigg)\bigg)$ by formula in Wikipedia
+- Posterior distribution $H_i \sim \mathcal{N}\bigg(\frac{\sigma^2_0}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{c}y_{i,1}\\ y_{i,2}\\ \end{array}\bigg), \frac{\sigma^2_0\sigma^2}{\sigma^2_0+\sigma^2}\bigg(\begin{array}{cc}1 & \\ & 1\\ \end{array}\bigg)\bigg)$ 
 
 
 --- 
 ## Gibbs Sampler results for 2D DPMM
 
-Underlying clusters and estimated clusters from Gibbs Sample 
-<br> <br>
+Underlying clusters and estimated clusters from Gibbs Sample [(Algorithm for this 2D DPMM)](https://github.com/XiaoruiZhu/DPMM/blob/master/codes/DPMM_2D.R)
 
-<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
+<center><img width=450px height=400px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=500px height=500px src="figure/2D_Clusters_Est1.png" align="right"></img>
 </center>
 
+
 --- 
 ## Gibbs Sampler results for 2D DPMM
 
 Underlying clusters and estimated clusters from Gibbs Sample 
-<br> <br>
+<br>
 
-<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
-<img width=450px height=450px src="figure/2D_Clusters_Est1.png" align="right"></img>
+<center><img width=450px height=400px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=500px height=500px src="figure/2D_Clusters_Est2.png" align="right"></img>
 </center>
 
+
 --- 
 ## Gibbs Sampler results for 2D DPMM
 
 Underlying clusters and estimated clusters from Gibbs Sample 
-<br> <br>
+<br> 
 
-<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
-<img width=450px height=450px src="figure/2D_Clusters_Est2.png" align="right"></img>
+<center><img width=450px height=400px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=500px height=500px src="figure/2D_Clusters_Est3.png" align="right"></img>
 </center>
 
+
 --- 
 ## Gibbs Sampler results for 2D DPMM
 
 Underlying clusters and estimated clusters from Gibbs Sample 
-<br> <br>
+<br> 
 
-<center><img width=450px height=450px src="figure/2D_Clusters_T.png" align="left"></img>
-<img width=450px height=450px src="figure/2D_Clusters_Est3.png" align="right"></img>
+<center><img width=450px height=400px src="figure/2D_Clusters_T.png" align="left"></img>
+<img width=500px height=500px src="figure/2D_Clusters_Est4.png" align="right"></img>
 </center>
 
 

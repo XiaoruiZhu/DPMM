@@ -5,6 +5,8 @@ library(ggplot2);library(MASS)
 #'
 #' @param num_customers the total number of customers for simulation
 #' @param theta the concentration parameter in Dirichlet Process, or 
+#' @param sig2 variances of y
+#' @param sig2_0 variances of prior distribution of centers
 #'
 #' @return
 #' @export
@@ -80,11 +82,6 @@ p2 + geom_point(data=centers,
 max(as.numeric(clusters[,2]))
 theta * log(n)
 # seems good, but maybe we can change n to show its rate
-# movie3d(play3d(), duration = 18,
-#         dir = getwd(), convert = TRUE)
-# 
-# movie3d(spin3d(axis = c(0, 0, 0)), duration = 18,
-#         dir = getwd(), convert = TRUE)
 
 # Gibbs Sampling: Algorithm 1 ---------------------------------------------
 
@@ -93,9 +90,12 @@ theta * log(n)
 #' Markov chain sampling methods for Dirichlet process mixture models. 
 #' Journal of computational and graphical statistics, 9(2), 249-265.
 #'
-#' @param Ser_M 
-#' @param y 
+#' @param Ser_M iteration times
+#' @param y 2D observed data
 #' @param alpha concentration parameter of Dirichlet
+#' @param sig2 variances of y
+#' @param sig2_0 variances of prior distribution of centers
+#' @param Initial 1 for all different initials, 2 for all same initials, 3 for initials are same as y
 #'
 #' @return
 #' @export
@@ -146,15 +146,18 @@ Covg_M_2D <- function(Ser_M, y, alpha=2, sig2=0.01, sig2_0=2, Initial=1) {
        End_Tables=theta)
 }
 
-# 
-sig2=.1; sig2_0=4; true_theta=0.4
-DPMM_Data <- DPMM_2D(num_customers = 1000, theta = true_theta, 
+
+# Simulation and show algorithm -------------------------------------------
+
+sig2=0.05; sig2_0=10; true_theta=0.4
+DPMM_Data <- DPMM_2D(num_customers = 500, theta = true_theta, 
                      sig2 = sig2, sig2_0 = sig2_0)
 plot(
   table( DPMM_Data[, "Table_ID"] )
   ,xlab="Table Index", ylab="Frequency", 
   main = "Chinese Restaurant Process"
 )
+
 # Draw graph to show clusters ---------------------------------------------
 clusters <- as.data.frame(DPMM_Data, row.names = T)
 clusters[,2] <- as.factor(clusters[,2])
@@ -169,13 +172,11 @@ p2 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID)) +
 p2 + geom_point(data=centers,
                 aes(x=dim1,y=dim2),inherit.aes = FALSE)
 
-# load(file = "data/Covg_M.Rdata")
-
 y <- DPMM_Data[, c("X1", "X2")]
-Sim_M <-  floor(exp(c(0:8, 9, 9.5, 10)))
+Sim_M <-  floor(exp(c(0:8, 8.5, 9.5, 10)))
 
 Test1 <- Covg_M_2D(Ser_M = Sim_M[1:9], y = y, alpha = true_theta, 
-                   sig2 = sig2, sig2_0 = sig2_0, Initial = 3)
+                   sig2 = sig2, sig2_0 = sig2_0, Initial = 2)
 
 ALLD <- list(Data=DPMM_Data, Results=Test1)
 # save(ALLD, file = "data/ALL_D.Rdata")
@@ -184,23 +185,41 @@ ALLD <- list(Data=DPMM_Data, Results=Test1)
 Test1 <- ALLD$Results
 DPMM_Data <- ALLD$Data
 Test1$NTables
-# dim(unique(Test1$End_Tables))[1]
-# unique(Test1$All_theta[,,5])
-# unique(Test1$End_Tables)
-# unique(DPMM_Data[, c("Center1", "Center2")])
 
-library(ggplot2)
+# Draw sequential scatter plot --------------------------------------------
+
+library(ggplot2); require("ggrepel")
 clusters <- as.data.frame(DPMM_Data, row.names = T)
 clusters[,2] <- as.factor(clusters[,2])
 centers <- as.data.frame(DPMM_Data[,5:6], row.names = T)
 colnames(centers) <- c("dim1","dim2")
-p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID)) + 
+p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID), size=0.001) + 
   geom_point()
-p3 + geom_point(data=centers, aes(x=dim1,y=dim2),
+p3 + geom_point(data=centers, aes(x=dim1,y=dim2), size=2, 
                 inherit.aes = FALSE) + 
   ggtitle("True data with clusters") +
   labs(x = "X1") + labs(y = "X2")
   
+Pred_center2 <- as.data.frame(Test1$All_theta[,,6], row.names = T)
+colnames(Pred_center2) <- c("dim1","dim2")
+Table_ID_Est <- as.factor(Pred_center2[,1])
+# Rename all levels
+levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
+p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
+  geom_point() 
+p3 + geom_point(data=Pred_center2, 
+                aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 4) + 
+  geom_point(data=Pred_center2, 
+             aes(x=dim1,y=dim2, shape=Table_ID_Est), color="black", size = 2) + 
+  ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[6])) +
+  labs(x = "X1") + labs(y = "X2") +
+  geom_point(data=centers, aes(x=dim1,y=dim2), shape=21, size=2, 
+             inherit.aes = FALSE) +
+  geom_label_repel(data=unique(centers),
+                   aes(x=dim1,y=dim2, label="TrueCenter"), fill="green3",
+                   fontface = 'bold', color = 'white',
+                   box.padding = 0.35, point.padding = 0.5,
+                   segment.color = 'grey50') 
 
 Pred_center2 <- as.data.frame(Test1$All_theta[,,7], row.names = T)
 colnames(Pred_center2) <- c("dim1","dim2")
@@ -209,11 +228,19 @@ Table_ID_Est <- as.factor(Pred_center2[,1])
 levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
 p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
   geom_point() 
-p3 + 
+p3 + geom_point(data=Pred_center2, 
+             aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 4) + 
   geom_point(data=Pred_center2, 
-             aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 5) + 
+             aes(x=dim1,y=dim2, shape=Table_ID_Est), color="black", size = 2) + 
   ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[7])) +
-  labs(x = "X1") + labs(y = "X2")
+  labs(x = "X1") + labs(y = "X2") +
+  geom_point(data=centers, aes(x=dim1,y=dim2), shape=21, size=2, 
+             inherit.aes = FALSE) +
+  geom_label_repel(data=unique(centers),
+                   aes(x=dim1,y=dim2, label="TrueCenter"), fill="green3",
+    fontface = 'bold', color = 'white',
+    box.padding = 0.35, point.padding = 0.5,
+    segment.color = 'grey50') 
 
 Pred_center2 <- as.data.frame(Test1$All_theta[,,8], row.names = T)
 colnames(Pred_center2) <- c("dim1","dim2")
@@ -222,11 +249,19 @@ Table_ID_Est <- as.factor(Pred_center2[,1])
 levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
 p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
   geom_point() 
-p3 + 
+p3 + geom_point(data=Pred_center2, 
+                aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 4) + 
   geom_point(data=Pred_center2, 
-             aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 5) + 
+             aes(x=dim1,y=dim2, shape=Table_ID_Est), color="black", size = 2) + 
   ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[8])) +
-  labs(x = "X1") + labs(y = "X2")
+  labs(x = "X1") + labs(y = "X2") +
+  geom_point(data=centers, aes(x=dim1,y=dim2), shape=21, size=2, 
+             inherit.aes = FALSE) +
+  geom_label_repel(data=unique(centers),
+                   aes(x=dim1,y=dim2, label="TrueCenter"), fill="green3",
+                   fontface = 'bold', color = 'white',
+                   box.padding = 0.35, point.padding = 0.5,
+                   segment.color = 'grey50') 
 
 Pred_center2 <- as.data.frame(Test1$All_theta[,,9], row.names = T)
 colnames(Pred_center2) <- c("dim1","dim2")
@@ -235,128 +270,16 @@ Table_ID_Est <- as.factor(Pred_center2[,1])
 levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
 p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
   geom_point() 
-p3 + 
+p3 + geom_point(data=Pred_center2, 
+                aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 4) + 
   geom_point(data=Pred_center2, 
-             aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 5) + 
+             aes(x=dim1,y=dim2, shape=Table_ID_Est), color="black", size = 2) + 
   ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[9])) +
-  labs(x = "X1") + labs(y = "X2")
-
-Pred_center2 <- as.data.frame(Test1$All_theta[,,6], row.names = T)
-colnames(Pred_center2) <- c("dim1","dim2")
-Table_ID_Est <- as.factor(Pred_center2[,1])
-# Rename all levels
-levels(Table_ID_Est) <- c(1:length(unique(Table_ID_Est)))
-p3 <- ggplot(data=clusters, aes(x=X1, y=X2, color=Table_ID_Est)) + 
-  geom_point() 
-p3 + 
-  geom_point(data=Pred_center2, 
-             aes(x=dim1,y=dim2, color=Table_ID_Est, shape=Table_ID_Est), size = 5) + 
-  ggtitle(paste("Clusters of Gibbs sampler when M=", Sim_M[6])) +
-  labs(x = "X1") + labs(y = "X2")
-
-
-# Haven’t change ----------------------------------------------------------
-
-
-Pred_center3 <- as.data.frame(Test1$All_theta[,,7], row.names = T)
-colnames(Pred_center3) <- c("dim1","dim2")
-p3 <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4], 
-                                color=as.factor(Pred_center3[,1]))) + 
-  geom_point()
-p3 + geom_point(data=Pred_center3, aes(x=dim1,y=dim2),
-                inherit.aes = FALSE)
-
-Pred_center4 <- as.data.frame(Test1$All_theta[,,8], row.names = T)
-colnames(Pred_center4) <- c("dim1","dim2")
-p3 <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4], 
-                                color=as.factor(Pred_center4[,1]))) + 
-  geom_point()
-p3 + geom_point(data=Pred_center4, aes(x=dim1,y=dim2),
-                inherit.aes = FALSE)
-
-
-Pred_center5 <- as.data.frame(Test1$All_theta[,,9], row.names = T)
-colnames(Pred_center5) <- c("dim1","dim2")
-p3 <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4], 
-                                color=as.factor(Pred_center5[,1]))) + 
-  geom_point()
-p3 + geom_point(data=Pred_center5, aes(x=dim1,y=dim2),
-                inherit.aes = FALSE)
-
-Pred_center6 <- as.data.frame(Test1$All_theta[,,10], row.names = T)
-colnames(Pred_center6) <- c("dim1","dim2")
-p3 <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4], 
-                                color=as.factor(Pred_center6[,1]))) + 
-  geom_point()
-p3 + geom_point(data=Pred_center6, aes(x=dim1,y=dim2),
-                inherit.aes = FALSE)
-
-Pred_center7 <- as.data.frame(Test1$All_theta[,,11], row.names = T)
-colnames(Pred_center7) <- c("dim1","dim2")
-p3 <- ggplot(data=clusters, aes(x=clusters[,3], y=clusters[,4], 
-                                color=as.factor(Pred_center7[,1]))) + 
-  geom_point()
-p3 + geom_point(data=Pred_center7, aes(x=dim1,y=dim2),
-                inherit.aes = FALSE)
-
-
-# Draw graph to show convergency of algorithm
-Sim_M <-  floor(exp(c(1:7)))
-Repp_1 <- replicate(100, 
-                    {Test1 <- Covg_M(Sim_M[1], y, alpha = 0.5)
-                    Test1$NTables[,2]})
-Repp_2 <- replicate(100, 
-                    {Test1 <- Covg_M(Sim_M[2], y)
-                    Test1$NTables[,2]})
-Repp_3 <- replicate(100, 
-                    {Test1 <- Covg_M(Sim_M[3], y)
-                    Test1$NTables[,2]})
-Repp_4 <- replicate(100, 
-                    {Test1 <- Covg_M(Sim_M[4], y)
-                    Test1$NTables[,2]})
-Repp_5 <- replicate(100, 
-                    {Test1 <- Covg_M(Sim_M[5], y)
-                    Test1$NTables[,2]})
-Repp_6 <- replicate(100, 
-                    {Test1 <- Covg_M(Sim_M[6], y)
-                    Test1$NTables[,2]})
-Repp_try <- replicate(10, 
-                      {Test1 <- Covg_M(Sim_M[7], y)
-                      Test1$NTables[,2]})
-Repp_try
-par(mfrow=c(2,3))
-hist(Repp_1, breaks = 20, main = "M=2", 
-     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_1)), max(Repp_1))); 
-abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
-hist(Repp_2, breaks = 20, main = "M=7", 
-     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_2)), max(Repp_2))); 
-abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
-hist(Repp_3, breaks = 20, main = "M=20", 
-     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_3)), max(Repp_3))); 
-abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
-hist(Repp_4, breaks = 20, main = "M=54", 
-     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_4)), max(Repp_4))); 
-abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
-hist(Repp_5, breaks = 20, main = "M=148", 
-     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_5)), max(Repp_5))); 
-abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
-hist(Repp_6, breaks = 20, main = "M=403", 
-     xlim = c(min(dim(table(DPMM_Data$Table_ID))-1, min(Repp_6)), max(Repp_6))); 
-abline(v= dim(table(DPMM_Data$Table_ID)), col="red")
-
-
-# Convergency of Algorithm 1 ----------------------------------------------
-
-Sim_M <-  floor(exp(c(1:7))) # floor(exp(c(1:2))) 
-Sim_N <- 100
-NT_i <- c(); Avg_NT <- c() # average number of tables
-
-for (j in 1:length(Sim_M)) {
-  for (i in 1:Sim_N) {
-    NT_i[i] <- Covg_M(Sim_M[j], y)$NTables$Tables
-  }
-  Avg_NT[j] <- mean(NT_i)
-}
-
-Result_Covg <- data.frame(Sim_M=Sim_M, Avg_NT=Avg_NT)
-All <- list(Result_Covg=Result_Covg, Data=DPMM_Data)
+  labs(x = "X1") + labs(y = "X2") +
+  geom_point(data=centers, aes(x=dim1,y=dim2), shape=21, size=2, 
+             inherit.aes = FALSE) +
+  geom_label_repel(data=unique(centers),
+                   aes(x=dim1,y=dim2, label="TrueCenter"), fill="green3",
+                   fontface = 'bold', color = 'white',
+                   box.padding = 0.9, point.padding = 0.9,
+                   segment.color = 'grey50') 
