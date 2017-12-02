@@ -34,11 +34,12 @@ loadfonts(device = "pdf")
 
 setwd("Example")
 require(ggplot2)
-png(file="2D_gibbs%02d.png", width=600, height=600)
+png(file="2D_gibbs%02d.png", width=700, height=600)
 
 Test1$NTables
 
 for (i in c(4:dim(Test1$NTables)[1])) {
+  # i=4
   Pred_center2 <- as.data.frame(Test1$All_theta[,,i], row.names = T)
   colnames(Pred_center2) <- c("dim1","dim2")
   Table_ID_Est <- as.factor(Pred_center2[,1])
@@ -59,7 +60,8 @@ for (i in c(4:dim(Test1$NTables)[1])) {
                      aes(x=dim1,y=dim2, label="TrueCenter"), fill="green3",
                      fontface = 'bold', color = 'white',
                      box.padding = 5, point.padding = 0.2,
-                     segment.color = 'grey50') 
+                     segment.color = 'grey50') +
+    xlim(-1.2, 4)+ ylim(-4.2,3)
   print(p3)
 }
 dev.off()

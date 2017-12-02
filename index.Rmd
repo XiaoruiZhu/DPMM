@@ -353,7 +353,7 @@ Underlying clusters and estimated clusters from Gibbs Sample
 Underlying clusters and estimated clusters from Gibbs Sample 
 <br> 
 
-<center><img width=500px height=500px src="figure/2D_Clusters_animation.gif"></img>
+<center><img width=600px height=600px src="figure/2D_Clusters_animation.gif"></img>
 </center>
 
 
